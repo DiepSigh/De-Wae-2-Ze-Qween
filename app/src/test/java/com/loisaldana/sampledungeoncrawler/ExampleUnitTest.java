@@ -1,4 +1,4 @@
-package com.uganda.dewae2deqween;
+package com.loisaldana.sampledungeoncrawler;
 
 import org.junit.Test;
 
