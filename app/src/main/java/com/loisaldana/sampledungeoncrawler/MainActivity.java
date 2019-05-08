@@ -1,6 +1,9 @@
 package com.loisaldana.sampledungeoncrawler;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +29,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         playButton.setOnClickListener(this);
 
-
     }
+
+
+
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
