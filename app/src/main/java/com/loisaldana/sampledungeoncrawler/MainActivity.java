@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+<<<<<<< HEAD
 import android.graphics.Point;
+=======
+>>>>>>> Andrey
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button playButton = (Button)findViewById(R.id.button);
 
         playButton.setOnClickListener(this);
-
 
     }
 

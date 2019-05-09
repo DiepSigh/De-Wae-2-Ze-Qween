@@ -1,6 +1,9 @@
 package com.loisaldana.sampledungeoncrawler;
 
+<<<<<<< HEAD
 import android.bluetooth.BluetoothClass;
+=======
+>>>>>>> Andrey
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +15,10 @@ import java.util.TimerTask;
 
 public class GameActivity extends AppCompatActivity {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Andrey
     private GameView gameView;
     // this is that tick is using
     private Handler handler = new Handler();
@@ -22,12 +28,18 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+<<<<<<< HEAD
 
         gameView = new GameView(this);
         setContentView(gameView);
 
         gameView.OnStart(); // if we want to call something else
 
+=======
+        gameView = new GameView(this);
+        setContentView(gameView);
+
+>>>>>>> Andrey
         //Here is game tick
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -43,11 +55,14 @@ public class GameActivity extends AppCompatActivity {
                 });
             }
         }, 0,TIMER_INTERVAL);
+<<<<<<< HEAD
 
 
         float deviceDensity = getResources().getDisplayMetrics().density;
         gameView.scaleNum =  deviceDensity;
 
+=======
+>>>>>>> Andrey
 
     }
 
