@@ -4,40 +4,48 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class GameActivity extends AppCompatActivity {
 
+
     private GameView gameView;
     // this is that tick is using
     private Handler handler = new Handler();
     private final static long TIMER_INTERVAL = 60;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         gameView = new GameView(this);
         setContentView(gameView);
+
+        gameView.OnStart(); // if we want to call something else
 
         //Here is game tick
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
 
-                gameView.Update(); // here we call updating other stuff in Update() function in GameView class
-                gameView.invalidate(); // here we call updating canvas in onDraw() function in GameView class
-                }
-            });
+                        gameView.Update(); // here we call updating other stuff in Update() function in GameView class
+                        gameView.invalidate(); // here we call updating canvas in onDraw() function in GameView class
+                    }
+                });
             }
         }, 0,TIMER_INTERVAL);
+
+
+
+
 
     }
 
