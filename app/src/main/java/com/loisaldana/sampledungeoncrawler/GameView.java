@@ -21,6 +21,8 @@ public class GameView extends View {
     Player character = new Player(); // creating player object here
     Bitmap mapBitmap; // this is bitmap we using for background
 
+    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.player1));
+
     public GameView(Context context) {
         super(context);
 
@@ -57,6 +59,8 @@ public class GameView extends View {
         character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
         character.drawPlayersStats(canvas); // call player's score on HUD
 
+        //Draw enemy
+        enemy.draw(canvas);
     }
 
 
