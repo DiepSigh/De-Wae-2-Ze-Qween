@@ -81,7 +81,7 @@ public class Player  {
         }
 
         playerY += playerSpeed;
-        playerX += playerSpeed / 2;
+
     }
 
 
