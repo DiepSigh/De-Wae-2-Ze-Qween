@@ -132,10 +132,23 @@ public class Player  {
 
     }
 
-
+    //Why is this function name so long
     public static double getRandomIntegerBetweenRange(double min, double max){
         double x = (int)(Math.random()*((max-min)+1))+min;
         return x;
+    }
+
+    //added by Stephen
+    //Checks range of Player and Enemy and lose life
+    public void enemyPlayerCheck(Enemy enemy, int enemyX, int enemyY){
+        //Check if in range of pixels
+        if (!enemy.getHit()) {
+            //IF STATEMENT WIP
+            if (enemyX <= (playerX + 150) && enemyX >= playerX && enemyY >= playerY && enemyY < (playerY+150)) {
+                CheckPlayerDeath();
+                enemy.setHit(true);
+            }
+        }
     }
 
 }

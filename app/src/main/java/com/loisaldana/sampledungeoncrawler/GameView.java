@@ -98,6 +98,7 @@ public class GameView extends View {
     //Start is here (we can deleted if we don't need it)
     void OnStart()
     {
+
         character.SetPlayerPosX(canvasWidth / 2 - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
         character.SetPlayerPosY(0); // here we define start position for player on Y
         character.SetPlayerSpeed(0);
@@ -106,7 +107,7 @@ public class GameView extends View {
     //Update function is here
     void Update()
     {
-
+        character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
 
         //System.out.println(character.minPlayerY);
         character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity
