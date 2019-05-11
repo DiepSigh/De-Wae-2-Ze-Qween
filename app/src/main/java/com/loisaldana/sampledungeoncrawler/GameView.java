@@ -18,6 +18,8 @@ public class GameView extends View {
     private int canvasWidth;
     private int canvasHeight;
 
+    boolean gameRun = false;
+
     Player character = new Player(); // creating player object here
     Bitmap mapBitmap; // this is bitmap we using for background
 
@@ -85,12 +87,15 @@ public class GameView extends View {
         character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
         character.drawPlayersStats(canvas); // call player's score on HUD
 
+        if(!gameRun)
+        {OnStart(); gameRun = true;}
+
     }
 
     //Start is here (we can deleted if we don't need it)
     void OnStart()
     {
-        character.SetPlayerPosX(200); // here we define start position for player on X
+        character.SetPlayerPosX(canvasWidth / 2 - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
         character.SetPlayerPosY(0); // here we define start position for player on Y
         character.SetPlayerSpeed(0);
     }

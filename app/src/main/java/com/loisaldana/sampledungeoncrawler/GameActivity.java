@@ -25,7 +25,6 @@ public class GameActivity extends AppCompatActivity {
         gameView = new GameView(this);
         setContentView(gameView);
 
-        gameView.OnStart(); // if we want to call something else
 
         //Here is game tick
         Timer timer = new Timer();
