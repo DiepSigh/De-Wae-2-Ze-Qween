@@ -21,6 +21,8 @@ public class GameView extends View {
     Player character = new Player(); // creating player object here
     Bitmap mapBitmap; // this is bitmap we using for background
 
+    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.knuckles1));
+
     public GameView(Context context) {
         super(context);
 
@@ -85,6 +87,9 @@ public class GameView extends View {
         character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
         character.drawPlayersStats(canvas); // call player's score on HUD
 
+        enemy.draw(canvas);
+
+
     }
 
     //Start is here (we can deleted if we don't need it)
@@ -98,7 +103,9 @@ public class GameView extends View {
     //Update function is here
     void Update()
     {
-        System.out.println(character.minPlayerY);
+
+
+        //System.out.println(character.minPlayerY);
         character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity
         character.SetPlayerScore(character.GetPlayerScore() + 1); // Testing Get() Set() for player's score
 

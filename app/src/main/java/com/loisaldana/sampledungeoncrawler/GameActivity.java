@@ -32,20 +32,16 @@ public class GameActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
 
-                        gameView.Update(); // here we call updating other stuff in Update() function in GameView class
-                        gameView.invalidate(); // here we call updating canvas in onDraw() function in GameView class
-                    }
-                });
+                gameView.Update(); // here we call updating other stuff in Update() function in GameView class
+                gameView.invalidate(); // here we call updating canvas in onDraw() function in GameView class
+                }
+            });
             }
         }, 0,TIMER_INTERVAL);
-
-
-
-
 
     }
 
