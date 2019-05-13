@@ -31,8 +31,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button playButton = (Button)findViewById(R.id.button);
 
         playButton.setOnClickListener(this);
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
     }
 
 
