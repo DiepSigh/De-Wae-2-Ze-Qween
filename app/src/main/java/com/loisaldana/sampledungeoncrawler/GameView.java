@@ -25,7 +25,7 @@ public class GameView extends View {
     AudioManager audioManager= new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
 
-    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.knuckles1));
+    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.sonic));
 
     public GameView(Context context) {
         super(context);
