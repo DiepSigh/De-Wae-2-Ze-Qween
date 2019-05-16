@@ -112,7 +112,8 @@ public class GameView extends View {
             character.drawDamage(canvas, character.playerDamageSprite);
         }
 
-        enemy.draw(canvas);
+        //Draws and respawns enemy when it reaches the end
+        enemy.draw(canvas, character.GetPlayerPosY());
 
         if(character.hitSpriteIsActive)
         {
@@ -136,6 +137,7 @@ public class GameView extends View {
             character.drawLevelUp(canvas, fontFaceLevel);
             character.timerForLvlMsg = character.timerForLvlMsg + 1;
             audioManager.PlayLevel(gameViewContext);
+
         }
         if(character.timerForLvlMsg >= 20)
         {
@@ -144,6 +146,9 @@ public class GameView extends View {
             character.playerTempScore = character.GetPlayerScore();
             character.SetPlayerLevel(character.GetPlayerLevel() + 1);
             character.getRandomIntegerBetweenRange(0,3);
+
+            //Increases Speed
+            enemy.increaseVel(2);
         }
 
 
