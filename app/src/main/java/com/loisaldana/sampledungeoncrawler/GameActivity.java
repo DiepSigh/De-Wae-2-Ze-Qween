@@ -1,5 +1,8 @@
 package com.loisaldana.sampledungeoncrawler;
 
+import android.graphics.Typeface;
+import android.os.Handler;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,7 +10,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+
 public class GameActivity extends AppCompatActivity {
+
+
+    private GameView gameView;
+    // this is that tick is using
+    private Handler handler = new Handler();
+    private final static long TIMER_INTERVAL = 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +30,32 @@ public class GameActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
         setContentView(R.layout.activity_game);
 
-        ImageView myImage = (ImageView)findViewById(R.id.imageView);
+        gameView = new GameView(this);
+
+        //Changing font family here :: added by Andrey  ::
+        TextView textView = new TextView(this);
+        Typeface typeFace = ResourcesCompat.getFont(this, R.font.font);
+        textView.setTypeface(typeFace);
+        gameView.fontFaceLevel = typeFace; // <--- assigning font face for our game level
+        //
+
+        setContentView(gameView);
+
+        //Here is game tick
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        gameView.Update(); // here we call updating other stuff in Update() function in GameView class
+                        gameView.invalidate(); // here we call updating canvas in onDraw() function in GameView class
+                    }
+                });
+            }
+        }, 0,TIMER_INTERVAL);
 
     }
 
@@ -27,6 +65,8 @@ public class GameActivity extends AppCompatActivity {
         if (hasFocus) {
             hideSystemUI();
         }
+
+
     }
 
     private void hideSystemUI() {
@@ -47,7 +87,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // Shows the system bars by removing all the flags
-// except for the ones that make the content appear under the system bars.
+    // except for the ones that make the content appear under the system bars.
+
     private void showSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -56,3 +97,11 @@ public class GameActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }*/
 }
+
+
+
+
+
+
+
+
