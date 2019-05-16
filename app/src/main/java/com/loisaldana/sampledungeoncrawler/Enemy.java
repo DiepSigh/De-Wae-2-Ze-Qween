@@ -15,7 +15,7 @@ public class Enemy {
     private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean hitPlayer;
-
+    public  boolean passPlayer = false; // <-- added by Andrey
     //Getters
     public int getX() { return x; }
     public int getY() { return y; }
@@ -48,13 +48,14 @@ public class Enemy {
     public void update(){
 
         //movement of enemy here
-        if (x<0) {
+        if (x<0 || hitPlayer) {
             double temp;
             //Reset pos/respawn
             x = screenWidth;
             temp = RNG(0, screenHeight-150);
             y = (int) Math.round(temp);
             hitPlayer = false;
+            passPlayer = false;
         } else {
             x -= xVel;
             //y += yVel;
