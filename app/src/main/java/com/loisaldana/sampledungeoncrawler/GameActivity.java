@@ -26,6 +26,7 @@ public class GameActivity extends AppCompatActivity {
 
         gameView = new GameView(this);
 
+
         //Changing font family here :: added by Andrey  ::
         TextView textView = new TextView(this);
         Typeface typeFace = ResourcesCompat.getFont(this, R.font.font);

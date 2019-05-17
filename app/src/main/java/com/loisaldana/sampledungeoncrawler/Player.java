@@ -11,7 +11,8 @@ import android.graphics.Typeface;
 
 public class Player  {
 
-    AudioManager audioManager= new AudioManager();
+    private AudioManager audioManager = new AudioManager();
+
     Context gameViewContext;
     Bitmap playerBitmap[] = new Bitmap[6];
     Bitmap playerCurrentBitmap;
@@ -20,6 +21,8 @@ public class Player  {
     Bitmap playerDamageSprite;
     Bitmap hitSprite;
 
+    public boolean playerHasCannon = true;
+    public boolean playerShots = false;
     public boolean hitSpriteIsActive = false;
     public boolean damageSpriteIsActive = false;
     public int damageSpriteCounter = 0;
@@ -34,8 +37,8 @@ public class Player  {
     public int spriteScoreY;
 
     private int playerX;
-    private int playerY = 0;
-    private int playerSpeed = 0;
+    private int playerY;
+    public int playerSpeed = 0;
     private int playerSpriteAngle = 0;
 
     public int maxPlayerY = 0; // top top position
@@ -46,7 +49,10 @@ public class Player  {
     private int playerScore = 0;
     public int playerTempScore;
     private int playerLevel = 1;
+    public int playerAmmo = 5;
+    private int shotEventCounter = 0;
 
+    public int reload = 0;
 
     public boolean sprite_wings_up = true;
     public boolean isDead = false;
@@ -85,7 +91,9 @@ public class Player  {
 
     private Paint plScore = new Paint();
     private Paint plLevel = new Paint();
+    private Paint plAmmo = new Paint();
     private Paint plLevelMsg = new Paint();
+
     public int sizeLevelMsg = 10;
     public int timerForLvlMsg = 0;
     public double randomColorMsg;
@@ -141,19 +149,52 @@ public class Player  {
         }
 
         //Settings for player rotation
-        if(playerSpeed < 0 && playerSpriteAngle < - 45)
+        if(playerSpeed < 0 && playerSpriteAngle < - 45 && !playerShots)
         {
             playerSpriteAngle = playerSpriteAngle - 20;
         }
-        if(playerSpeed > -10 && playerSpriteAngle <= 45)
+        if(playerSpeed > -5 && playerSpriteAngle <= 35 && !playerShots)
         {
-            playerSpriteAngle = playerSpriteAngle + 20;
+            playerSpriteAngle = playerSpriteAngle + 15;
         }
 
-        playerY += playerSpeed;
+        if(!playerShots)
+        { playerY += playerSpeed; }
 
+        if(playerAmmo > 0)
+        {
+            reload = reload + 2;
+        }
+
+        if(reload >= 360)
+        {
+            if (playerAmmo > 0)
+            {
+                shotEventCounter = shotEventCounter + 1;
+                playerSpriteAngle = 0;
+                playerShots = true;
+
+                if(shotEventCounter >= 5)
+                {
+                    shotEventCounter = 0;
+                    reload = 0;
+                    playerAmmo = playerAmmo - 1;
+                }
+            }
+            if (playerAmmo == 0)
+            {
+                reload = 0;
+                playerShots = false;
+            }
+        }
+        if(reload == 8)
+        {
+            playerShots = false;
+
+        }
+
+        System.out.println("PLAYER'S RELOAD    " + reload);
     }
-
 
     //Draw player's lifes
     void drawPlayersLifes(Canvas canvas, Bitmap mapBitmap){
@@ -162,7 +203,7 @@ public class Player  {
 
         for (int i=0; i< plLife.length; i++ ) {
 
-            canvas.drawBitmap(mapBitmap,  canvas.getWidth() - 400 + (i * 100), 50, null);
+            canvas.drawBitmap(mapBitmap,  canvas.getWidth() - 400 + (i * 100), 25, null);
         }
         //System.out.println("CALL PLAYER's LIFE DRAW");
     }
@@ -176,18 +217,30 @@ public class Player  {
         plScore.setShadowLayer(5,5,5, Color.BLACK);
         plScore.setAntiAlias(true);
 
-        canvas.drawText("Score :   " + playerScore, 100, 100, plScore);
+        canvas.drawText("Score :  " + playerScore, 100, 100, plScore);
 
-        plLevel.setColor(Color.WHITE);
+        plLevel.setColor(Color.YELLOW);
         plLevel.setTextSize(64);
         plLevel.setTypeface(typeface);
         plLevel.setShadowLayer(5,5,5, Color.BLACK);
         plLevel.setTextAlign(Paint.Align.CENTER);
         plLevel.setAntiAlias(true);
 
-        canvas.drawText("Level :   " + playerLevel, canvas.getWidth() / 2, 100, plLevel);
+        canvas.drawText("Level :  " + playerLevel, canvas.getWidth() / 2 - 225 , 100, plLevel);
 
-        System.out.println(typeface);
+        if(playerAmmo > 0)
+        {plAmmo.setColor(Color.GREEN);}
+        else
+        {plAmmo.setColor(Color.RED);}
+        plAmmo.setTextSize(64);
+        plAmmo.setTypeface(typeface);
+        plAmmo.setShadowLayer(5,5,5, Color.BLACK);
+        plAmmo.setTextAlign(Paint.Align.CENTER);
+        plAmmo.setAntiAlias(true);
+
+        canvas.drawText("Ammo :  " + playerAmmo, canvas.getWidth() / 2 + 225, 100, plAmmo);
+
+
     }
 
     //Draw player's level up
@@ -209,7 +262,7 @@ public class Player  {
         plLevelMsg.setTextAlign(Paint.Align.CENTER);
         plLevelMsg.setAntiAlias(true);
         sizeLevelMsg = sizeLevelMsg + 15;
-        canvas.drawText("LEVEL UP!", canvas.getWidth()/2, canvas.getHeight()/2, plLevelMsg);
+        canvas.drawText("LEVEL UP!", canvas.getWidth()/ 2, canvas.getHeight()/ 2, plLevelMsg);
     }
 
     //Checking GameOver condition
@@ -282,7 +335,7 @@ public class Player  {
             }
         }
         //Add one score for player (Added by Andrey)
-        if(enemy.getX() < playerX && !enemy.passPlayer)
+        if(enemy.getX() < playerX && !enemy.passPlayer && !isDead)
         {
             playerScore = playerScore + 10;
             audioManager.PlayScore(gameViewContext);
