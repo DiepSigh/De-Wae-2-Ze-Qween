@@ -208,7 +208,7 @@ public class GameView extends View {
             if (tails.getActive()){
                 tails.increaseVel(3);
             }else {
-                if (character.GetPlayerLevel() == 5) {
+                if (character.GetPlayerLevel() == 2) {
                     tails.setActive(true);
                 }
             }
@@ -241,7 +241,9 @@ public class GameView extends View {
     //Update function is here
     void Update()
     {
+        //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
+        character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
