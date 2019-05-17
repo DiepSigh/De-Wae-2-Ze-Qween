@@ -122,7 +122,7 @@ public class GameView extends View {
         //Draws and respawns enemy when it reaches the end
         enemy.draw(canvas, character.GetPlayerPosY());
         if (tails.getActive()) {
-            int temp = (int)RNG(50, canvasHeight);
+            int temp = (int)tails.RNG(50, canvasHeight);
             tails.draw(canvas, temp);
         }
         //Draw bullet here
@@ -184,8 +184,6 @@ public class GameView extends View {
                 laserCannon.drawWeaponReadyIcon(canvas, laserCannon.weaponReadyIcon, canvasWidth/2 + 405, 20);
             }
         }
-
-        enemy.draw(canvas);
 
         // Draw score sprite on HUD
         if(character.playerTempScore == character.GetPlayerScore() - 100 && character.timerForLvlMsg < 20)
