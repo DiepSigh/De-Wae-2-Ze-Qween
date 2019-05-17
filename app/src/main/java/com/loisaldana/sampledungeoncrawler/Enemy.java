@@ -13,7 +13,7 @@ public class Enemy {
     private Bitmap img[] = new Bitmap[3];
     private int x, y;
     private int count;
-    private int xVel, yVel;
+    private int xVel;
     private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean hitPlayer;
@@ -47,8 +47,7 @@ public class Enemy {
         //keeps track of current img for animation
         count = 0;
         //speed of bitmap?
-        xVel = 20;
-        yVel = 10;
+        xVel = 50;
         //pos of enemy
         x = screenWidth;
         y = screenHeight / 2;

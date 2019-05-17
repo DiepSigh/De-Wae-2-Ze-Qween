@@ -122,7 +122,7 @@ public class GameView extends View {
         //Draws and respawns enemy when it reaches the end
         enemy.draw(canvas, character.GetPlayerPosY());
         if (tails.getActive()) {
-            int temp = (int)tails.RNG(50, canvasHeight);
+            int temp = (int)tails.RNG(50, canvasHeight-500);
             tails.draw(canvas, temp);
         }
         //Draw bullet here
@@ -202,11 +202,11 @@ public class GameView extends View {
             character.getRandomIntegerBetweenRange(0,3);
 
             //Increases Speed every level
-            enemy.increaseVel(2);
+            enemy.increaseVel(4);
 
             //Set tails to active when x level and increase vel if already active
             if (tails.getActive()){
-                tails.increaseVel(1);
+                tails.increaseVel(3);
             }else {
                 if (character.GetPlayerLevel() == 5) {
                     tails.setActive(true);
