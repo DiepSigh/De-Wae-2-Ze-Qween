@@ -10,6 +10,7 @@ public class AudioManager {
     MediaPlayer hit;
     MediaPlayer score;
     MediaPlayer level;
+    MediaPlayer bullet;
 
     private int playerMoveUp = 0;
 
@@ -56,6 +57,7 @@ public class AudioManager {
         score.start();
     }
 
+
     public void PlayLevel(Context context)
     {
         if(level == null)
@@ -65,6 +67,16 @@ public class AudioManager {
         level.setLooping(false);
         level.start();
 
+    }
+
+    public void PlayBullet(Context context)
+    {
+        if(bullet == null)
+        {
+            bullet = MediaPlayer.create(context, R.raw.bullet);
+        }
+        bullet.setLooping(false);
+        bullet.start();
     }
 
     public void Pause()

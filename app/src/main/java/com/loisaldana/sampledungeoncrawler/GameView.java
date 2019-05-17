@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
+
 /*
 Created by Canados
 */
@@ -22,6 +23,9 @@ public class GameView extends View {
     Typeface fontFaceLevel;
 
     Player character = new Player(); // creating player object here
+    Weapon laserCannon = new Weapon(); // creating weapon object
+    Projectile bullet = new Projectile(); // creating bullet object
+    AudioManager audioManager = new AudioManager();
     Loot coin =  new Loot(); // creates items object
     AudioManager audioManager= new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
@@ -31,7 +35,7 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
         gameViewContext = context;
-        character.gameViewContext= context;
+        character.gameViewContext = context;
         character.playerBitmap[0] = BitmapFactory.decodeResource(getResources(), R.drawable.knuckles1);
         character.playerBitmap[1] = BitmapFactory.decodeResource(getResources(), R.drawable.knuckles2);
         character.playerBitmap[2] = BitmapFactory.decodeResource(getResources(), R.drawable.knuckles3);
@@ -42,6 +46,12 @@ public class GameView extends View {
         character.playerScoreSprite = BitmapFactory.decodeResource(getResources(), R.drawable.point80);
         character.playerDamageSprite = BitmapFactory.decodeResource(getResources(), R.drawable.damage150);
         character.hitSprite = BitmapFactory.decodeResource(getResources(), R.drawable.hit200);
+        laserCannon.weaponBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.laser_cannon);
+        laserCannon.weaponReadyIcon = BitmapFactory.decodeResource(getResources(), R.drawable.bicon);
+        bullet.bulletBitmap[0] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet1);
+        bullet.bulletBitmap[1] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet2);
+        bullet.bulletBitmap[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet3);
+        bullet.bulletBitmap[3] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet4);
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
         coin.coin = BitmapFactory.decodeResource(getResources(), R.drawable.coin3);
 
@@ -68,7 +78,6 @@ public class GameView extends View {
                 character.sprite_wings_up = false;
                 character.spriteStep = character.spriteStep + 1;
                 character.tempBitmap = character.tempBitmap + 1;
-
             }
             else
             {
@@ -101,9 +110,6 @@ public class GameView extends View {
             }
         }
 
-        character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
-        character.drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
-
         if(enemy.passPlayer && !character.isDead)
         {
             character.drawSrore(canvas, character.playerScoreSprite); // call player's score on HUD
@@ -114,14 +120,47 @@ public class GameView extends View {
             character.drawDamage(canvas, character.playerDamageSprite);
         }
 
-        enemy.draw(canvas);
-
-        if(character.hitSpriteIsActive)
+        //Draw bullet here
+        if(bullet.isActive)
         {
 
+            if(!bullet.setPlayerPosition)
+            {
+                bullet.SetBulletPosX(character.GetPlayerPosX() + 25);
+                bullet.SetBulletPosY(character.GetPlayerPosY() - 25);
+                bullet.setPlayerPosition = true;
+            }
+            if(bullet.spriteStep < 4)
+            {
+                bullet.bulletCurrentBitmap = bullet.bulletBitmap[bullet.tempBitmap];
+                bullet.drawBullet(canvas, bullet.bulletCurrentBitmap);
+                bullet.tempBitmap = bullet.tempBitmap + 1;
+                bullet.spriteStep = bullet.spriteStep + 1;
+            }
+            if(bullet.spriteStep == 4)
+            {
+                bullet.bulletCurrentBitmap = bullet.bulletBitmap[bullet.tempBitmap];
+                bullet.drawBullet(canvas, bullet.bulletCurrentBitmap);
+                bullet.tempBitmap = 0;
+                bullet.spriteStep = 1;
+
+            }
+
+        }
+
+
+        //Draw Weapon sprite
+        if(character.playerHasCannon && !character.isDead)
+        {
+            laserCannon.drawWeapon(canvas, GetRotateBitmap(laserCannon.weaponBitmap, character.GetAngleRotation()));
+        }
+
+
+        //Draw damage sprite on HUD
+        if(character.hitSpriteIsActive)
+        {
             if(character.damageSpriteCounter < 3)
             {
-
                 canvas.drawBitmap(character.hitSprite, character.spriteHitX, character.spriteHitY, null);
                 character.damageSpriteCounter = character.damageSpriteCounter + 1;
             }
@@ -132,8 +171,19 @@ public class GameView extends View {
             }
 
         }
+        if(character.playerAmmo >0)
+        {
+            laserCannon.drawIndicator(canvas, canvasWidth/2 + 425, 25, character.reload);
+            if(laserCannon.weaponIsReady)
+            {
+                laserCannon.drawWeaponReadyIcon(canvas, laserCannon.weaponReadyIcon, canvasWidth/2 + 405, 20);
+            }
+        }
 
-        if(character.playerTempScore == character.GetPlayerScore() - 10 && character.timerForLvlMsg < 20)
+        enemy.draw(canvas);
+
+        // Draw score sprite on HUD
+        if(character.playerTempScore == character.GetPlayerScore() - 100 && character.timerForLvlMsg < 20)
         {
             character.drawLevelUp(canvas, fontFaceLevel);
             character.timerForLvlMsg = character.timerForLvlMsg + 1;
@@ -160,6 +210,8 @@ public class GameView extends View {
 
 
         //System.out.println("PLAYER'S REAL SCORE  " + character.GetPlayerScore());
+        character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
+        character.drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
 
         if(!gameRun)
         {OnStart(); gameRun = true;}
@@ -170,10 +222,13 @@ public class GameView extends View {
     //Start is here (we can deleted if we don't need it)
     void OnStart()
     {
-
         character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
         character.SetPlayerPosY(0); // here we define start position for player on Y
         character.SetPlayerSpeed(0);
+        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
+        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
+        bullet.SetBulletPosX(character.GetPlayerPosX());
+        bullet.SetBulletPosY(character.GetPlayerPosX());
         character.playerTempScore = character.GetPlayerScore();
         character.getRandomIntegerBetweenRange(0,4);
         audioManager.PlayBgTheme(gameViewContext);
@@ -183,12 +238,24 @@ public class GameView extends View {
     void Update()
     {
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
-        //System.out.println("PLAYER'S X    " + character.GetPlayerPosX());
-        character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity.
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
             audioManager.PlayPlayerMoveUp(gameViewContext);
+        }
+        if(character.playerHasCannon)
+        {
+            laserCannon.SetWeaponPosX(character.GetPlayerPosX());
+            laserCannon.SetWeaponPosY(character.GetPlayerPosY());
+        }
+        if(character.playerShots)
+        {
+            bullet.isActive = true;
+            audioManager.PlayBullet(gameViewContext);
+        }
+        else
+        {
+            character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity.
         }
 
         if(coin.onReset){
@@ -199,10 +266,11 @@ public class GameView extends View {
     //If we touch screen we changing player's movement...
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN)
+        if(event.getAction() == MotionEvent.ACTION_DOWN && !character.playerShots)
         {
+
             character.SetPlayerSpeed(-30);
-            character.SetAngleRotation(-45);
+            character.SetAngleRotation(-35);
 
         }
         return true;
@@ -231,7 +299,7 @@ public class GameView extends View {
         // create new matrix
         Matrix matrix = new Matrix();
         // setup rotation degree
-        matrix.postRotate(degree);
+        matrix.setRotate(degree, src.getWidth()/2, src.getHeight()/2);
         Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
         return rotateBitmap;
     }
