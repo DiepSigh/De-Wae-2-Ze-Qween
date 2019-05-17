@@ -295,4 +295,8 @@ public class Player  {
         }
     }
 
+    public void GameOver(){
+
+    }
+
 }

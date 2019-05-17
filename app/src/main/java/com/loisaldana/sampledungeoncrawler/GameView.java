@@ -22,6 +22,7 @@ public class GameView extends View {
     Typeface fontFaceLevel;
 
     Player character = new Player(); // creating player object here
+    Loot coin =  new Loot(); // creates items object
     AudioManager audioManager= new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
 
@@ -42,6 +43,7 @@ public class GameView extends View {
         character.playerDamageSprite = BitmapFactory.decodeResource(getResources(), R.drawable.damage150);
         character.hitSprite = BitmapFactory.decodeResource(getResources(), R.drawable.hit200);
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
+        coin.coin = BitmapFactory.decodeResource(getResources(), R.drawable.coin3);
 
      }
 
@@ -146,11 +148,22 @@ public class GameView extends View {
             character.getRandomIntegerBetweenRange(0,3);
         }
 
+        if(!coin.isActive && !coin.onReset){
+            coin.canvasW = canvas.getWidth();
+            coin.cX = coin.canvasW;
+            coin.getRandomY(0, canvas.getHeight());
+        }
+
+        if(!coin.onReset){
+            coin.drawCoin(canvas,coin.coin);
+        }
+
 
         //System.out.println("PLAYER'S REAL SCORE  " + character.GetPlayerScore());
 
         if(!gameRun)
         {OnStart(); gameRun = true;}
+
 
     }
 
@@ -176,6 +189,10 @@ public class GameView extends View {
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
             audioManager.PlayPlayerMoveUp(gameViewContext);
+        }
+
+        if(coin.onReset){
+            coin.update();
         }
     }
 
@@ -218,7 +235,6 @@ public class GameView extends View {
         Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
         return rotateBitmap;
     }
-
 
 }
 
