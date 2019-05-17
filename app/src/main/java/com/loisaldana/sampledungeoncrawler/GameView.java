@@ -9,6 +9,8 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import static com.loisaldana.sampledungeoncrawler.Enemy.RNG;
+
 /*
 Created by Canados
 */
@@ -25,7 +27,8 @@ public class GameView extends View {
     AudioManager audioManager= new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
 
-    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.sonic));
+    Enemy enemy;
+    Enemy tails;
 
     public GameView(Context context) {
         super(context);
@@ -43,6 +46,8 @@ public class GameView extends View {
         character.hitSprite = BitmapFactory.decodeResource(getResources(), R.drawable.hit200);
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
 
+        enemy = new Enemy(context, true);
+        tails = new Enemy(context, false);
      }
 
     /* Here we can add images that we want to draw. This function also updates */
@@ -114,6 +119,10 @@ public class GameView extends View {
 
         //Draws and respawns enemy when it reaches the end
         enemy.draw(canvas, character.GetPlayerPosY());
+        if (tails.getActive()) {
+            int temp = (int)RNG(50, canvasHeight);
+            tails.draw(canvas, temp);
+        }
 
         if(character.hitSpriteIsActive)
         {
@@ -147,8 +156,17 @@ public class GameView extends View {
             character.SetPlayerLevel(character.GetPlayerLevel() + 1);
             character.getRandomIntegerBetweenRange(0,3);
 
-            //Increases Speed
+            //Increases Speed every level
             enemy.increaseVel(2);
+
+            //Set tails to active when x level and increase vel if already active
+            if (tails.getActive()){
+                tails.increaseVel(1);
+            }else {
+                if (character.GetPlayerLevel() == 5) {
+                    tails.setActive(true);
+                }
+            }
         }
 
 
@@ -159,7 +177,6 @@ public class GameView extends View {
 
     }
 
-    //Start is here (we can deleted if we don't need it)
     void OnStart()
     {
 
