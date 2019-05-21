@@ -1,9 +1,13 @@
 package com.loisaldana.sampledungeoncrawler;
 
+import android.graphics.Typeface;
 import android.os.Handler;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,15 +20,21 @@ public class GameActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private final static long TIMER_INTERVAL = 60;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         gameView = new GameView(this);
-        setContentView(gameView);
 
+
+        //Changing font family here :: added by Andrey  ::
+        TextView textView = new TextView(this);
+        Typeface typeFace = ResourcesCompat.getFont(this, R.font.font);
+        textView.setTypeface(typeFace);
+        gameView.fontFaceLevel = typeFace; // <--- assigning font face for our game level
+        //
+
+        setContentView(gameView);
 
         //Here is game tick
         Timer timer = new Timer();
@@ -41,10 +51,6 @@ public class GameActivity extends AppCompatActivity {
                 });
             }
         }, 0,TIMER_INTERVAL);
-
-
-
-
 
     }
 
