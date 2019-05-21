@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
-
 /*
 Created by Canados
 */
@@ -28,7 +27,8 @@ public class GameView extends View {
     AudioManager audioManager = new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
 
-    Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.sonic));
+    Enemy enemy;
+    Enemy tails;
 
     public GameView(Context context) {
         super(context);
@@ -52,6 +52,8 @@ public class GameView extends View {
         bullet.bulletBitmap[3] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet4);
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
 
+        enemy = new Enemy(context, true);
+        tails = new Enemy(context, false);
      }
 
     /* Here we can add images that we want to draw. This function also updates */
@@ -117,6 +119,12 @@ public class GameView extends View {
             character.drawDamage(canvas, character.playerDamageSprite);
         }
 
+        //Draws and respawns enemy when it reaches the end
+        enemy.draw(canvas, character.GetPlayerPosY());
+        if (tails.getActive()) {
+            int temp = (int)tails.RNG(50, canvasHeight-500);
+            tails.draw(canvas, temp);
+        }
         //Draw bullet here
         if(bullet.isActive)
         {
@@ -177,14 +185,13 @@ public class GameView extends View {
             }
         }
 
-        enemy.draw(canvas);
-
         // Draw score sprite on HUD
         if(character.playerTempScore == character.GetPlayerScore() - 100 && character.timerForLvlMsg < 20)
         {
             character.drawLevelUp(canvas, fontFaceLevel);
             character.timerForLvlMsg = character.timerForLvlMsg + 1;
             audioManager.PlayLevel(gameViewContext);
+
         }
         if(character.timerForLvlMsg >= 20)
         {
@@ -193,6 +200,18 @@ public class GameView extends View {
             character.playerTempScore = character.GetPlayerScore();
             character.SetPlayerLevel(character.GetPlayerLevel() + 1);
             character.getRandomIntegerBetweenRange(0,3);
+
+            //Increases Speed every level
+            enemy.increaseVel(4);
+
+            //Set tails to active when x level and increase vel if already active
+            if (tails.getActive()){
+                tails.increaseVel(3);
+            }else {
+                if (character.GetPlayerLevel() == 2) {
+                    tails.setActive(true);
+                }
+            }
         }
 
 
@@ -205,7 +224,6 @@ public class GameView extends View {
 
     }
 
-    //Start is here (we can deleted if we don't need it)
     void OnStart()
     {
         character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
@@ -223,7 +241,9 @@ public class GameView extends View {
     //Update function is here
     void Update()
     {
+        //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
+        character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
