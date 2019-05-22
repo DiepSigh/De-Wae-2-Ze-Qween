@@ -245,6 +245,10 @@ public class GameView extends View {
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
 
+        //hitbox check with enemy and projectile
+        enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY());
+        tails.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY());
+
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
             audioManager.PlayPlayerMoveUp(gameViewContext);
