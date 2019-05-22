@@ -73,7 +73,7 @@ public class GameView extends View {
 
 
         bullet.onDraw(canvas, character.GetPlayerPosX(), character.GetPlayerPosY());
-        laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady);
+        laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady, character.playerHasCannon);
 
         //Draw Weapon sprite
         if(character.playerHasCannon && !character.isDead)

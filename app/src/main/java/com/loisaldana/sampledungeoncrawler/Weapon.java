@@ -45,28 +45,30 @@ public class Weapon {
 
 
     //Draw button on canvas
-    void drawButtonWeapon(Canvas canvas, int x, int y, boolean status)
+    void drawButtonWeapon(Canvas canvas, int x, int y, boolean status, boolean statusCharacter)
     {
         buttonX = x / 2 - 100;
         buttonY = y - 200;
 
         System.out.println(status);
 
-        if(!weaponButtonClicked && status)
+        if(statusCharacter)
         {
-            buttonCurrent = weaponActiveButton;
-            canvas.drawBitmap(weaponActiveButton, buttonX, buttonY,null);
-        }
-        else
-        {
-            buttonCurrent = weaponNotactiveButton;
-            canvas.drawBitmap(weaponNotactiveButton, buttonX, buttonY,null);
-            if(!status)
+            if(!weaponButtonClicked && status)
             {
-                weaponButtonClicked = false;
+                buttonCurrent = weaponActiveButton;
+                canvas.drawBitmap(weaponActiveButton, buttonX, buttonY,null);
+            }
+            else
+            {
+                buttonCurrent = weaponNotactiveButton;
+                canvas.drawBitmap(weaponNotactiveButton, buttonX, buttonY,null);
+                if(!status)
+                {
+                    weaponButtonClicked = false;
+                }
             }
         }
-
 
     }
 

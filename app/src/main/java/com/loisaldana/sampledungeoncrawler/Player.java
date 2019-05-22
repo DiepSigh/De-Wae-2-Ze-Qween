@@ -313,18 +313,20 @@ public class Player  {
 
         canvas.drawText("Level :  " + playerLevel, canvas.getWidth() / 2 - 225 , 100, plLevel);
 
-        if(playerAmmo > 0)
-        {plAmmo.setColor(Color.GREEN);}
-        else
-        {plAmmo.setColor(Color.RED);}
-        plAmmo.setTextSize(64);
-        plAmmo.setTypeface(typeface);
-        plAmmo.setShadowLayer(5,5,5, Color.BLACK);
-        plAmmo.setTextAlign(Paint.Align.CENTER);
-        plAmmo.setAntiAlias(true);
+        if(playerHasCannon)
+        {
+            if(playerAmmo > 0)
+            {plAmmo.setColor(Color.GREEN);}
+            else
+            {plAmmo.setColor(Color.RED);}
+            plAmmo.setTextSize(64);
+            plAmmo.setTypeface(typeface);
+            plAmmo.setShadowLayer(5,5,5, Color.BLACK);
+            plAmmo.setTextAlign(Paint.Align.CENTER);
+            plAmmo.setAntiAlias(true);
 
-        canvas.drawText("Ammo :  " + playerAmmo, canvas.getWidth() / 2 + 225, 100, plAmmo);
-
+            canvas.drawText("Ammo :  " + playerAmmo, canvas.getWidth() / 2 + 225, 100, plAmmo);
+        }
 
     }
 
