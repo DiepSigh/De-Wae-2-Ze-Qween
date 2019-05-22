@@ -3,8 +3,10 @@ package com.loisaldana.sampledungeoncrawler;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
@@ -51,7 +53,7 @@ public class Player  {
     private int playerLevel = 1;
     public int playerAmmo = 5;
     private int shotEventCounter = 0;
-
+    public boolean shotIsReady = false;
     public int reload = 0;
 
     public boolean sprite_wings_up = true;
@@ -97,6 +99,86 @@ public class Player  {
     public int sizeLevelMsg = 10;
     public int timerForLvlMsg = 0;
     public double randomColorMsg;
+
+    //Constructor
+    public Player (Context context)
+    {
+        gameViewContext = context;
+        playerBitmap[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles1);
+        playerBitmap[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles2);
+        playerBitmap[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles3);
+        playerBitmap[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles4);
+        playerBitmap[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles5);
+        playerBitmap[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles6);
+
+        HPBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.life);
+        playerScoreSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.point80);
+        playerDamageSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.damage150);
+        hitSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.hit200);
+    }
+
+
+    public void onDraw(Canvas canvas)
+    {
+        //Draw player's spite with animation
+        if(sprite_wings_up && !isDead)
+        {
+            if(spriteStep == 1 || spriteStep == 3 || spriteStep == 5 && GetPlayerSpeed() < 0)
+            {
+                playerCurrentBitmap = playerBitmap[tempBitmap];
+                drawPlayer(canvas, GetRotateBitmap(playerBitmap[tempBitmap], GetAngleRotation()));
+                sprite_wings_up = false;
+                spriteStep = spriteStep + 1;
+                tempBitmap = tempBitmap + 1;
+            }
+            else
+            {
+                drawPlayer(canvas, GetRotateBitmap(playerBitmap[tempBitmap], GetAngleRotation()));
+            }
+
+        }
+        else if(!sprite_wings_up && !isDead)
+        {
+            if(spriteStep == 2 || spriteStep == 4 && GetPlayerSpeed() < 0)
+            {
+                playerCurrentBitmap = playerBitmap[tempBitmap];
+                drawPlayer(canvas, GetRotateBitmap(playerBitmap[tempBitmap], GetAngleRotation()));
+                sprite_wings_up = true;
+                spriteStep = spriteStep + 1;
+                tempBitmap = tempBitmap + 1;
+            }
+            else if(spriteStep == 6 && GetPlayerSpeed() < 0)
+            {
+                playerCurrentBitmap = playerBitmap[tempBitmap];
+                drawPlayer(canvas, GetRotateBitmap(playerBitmap[tempBitmap], GetAngleRotation()));
+                sprite_wings_up = true;
+                spriteStep = 1;
+                tempBitmap = 0;
+
+            }
+            else
+            {
+                drawPlayer(canvas, GetRotateBitmap(playerBitmap[tempBitmap], GetAngleRotation()));
+            }
+        }
+
+        //Draw damage sprite on HUD
+        if(hitSpriteIsActive)
+        {
+            if(damageSpriteCounter < 3)
+            {
+                canvas.drawBitmap(hitSprite, spriteHitX, spriteHitY, null);
+                damageSpriteCounter = damageSpriteCounter + 1;
+            }
+            if(damageSpriteCounter >= 3)
+            {
+                damageSpriteCounter = 0;
+                hitSpriteIsActive = false;
+            }
+
+        }
+
+    }
 
     void drawDamage(Canvas canvas, Bitmap mapBitmap)
     {
@@ -168,11 +250,13 @@ public class Player  {
 
         if(reload >= 360)
         {
-            if (playerAmmo > 0)
+            audioManager.PlayReload(gameViewContext);
+            shotIsReady = true;
+            if (playerAmmo > 0 && playerShots)
             {
                 shotEventCounter = shotEventCounter + 1;
                 playerSpriteAngle = 0;
-                playerShots = true;
+                playerSpeed = playerSpeed - 1;
 
                 if(shotEventCounter >= 5)
                 {
@@ -190,10 +274,11 @@ public class Player  {
         if(reload == 8)
         {
             playerShots = false;
-
+            shotIsReady = false;
+            audioManager.realodIsPlayed = false;
         }
 
-        System.out.println("PLAYER'S RELOAD    " + reload);
+        //System.out.println("PLAYER'S RELOAD    " + reload);
     }
 
     //Draw player's lifes
@@ -273,6 +358,8 @@ public class Player  {
         {
 
             case 3:
+                playerHasCannon = false;
+                playerAmmo = 0;
                 audioManager.PlayHit(gameViewContext);
                 hitSpriteIsActive = true;
                 spriteHitX = playerX;
@@ -285,6 +372,8 @@ public class Player  {
                 spriteDamageY = playerY;
                 break;
             case 2:
+                playerHasCannon = false;
+                playerAmmo = 0;
                 audioManager.PlayHit(gameViewContext);
                 hitSpriteIsActive = true;
                 spriteHitX = playerX;
@@ -296,6 +385,8 @@ public class Player  {
                 spriteDamageY = playerY;
                 break;
             case 1:
+                playerHasCannon = false;
+                playerAmmo = 0;
                 audioManager.PlayHit(gameViewContext);
                 hitSpriteIsActive = true;
                 spriteHitX = playerX;
@@ -346,6 +437,18 @@ public class Player  {
             }
             enemy.passPlayer = true;
         }
+    }
+
+
+    //Player sprite rotation
+    public static Bitmap GetRotateBitmap(Bitmap src, float degree)
+    {
+        // create new matrix
+        Matrix matrix = new Matrix();
+        // setup rotation degree
+        matrix.setRotate(degree, src.getWidth()/2, src.getHeight()/2);
+        Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+        return rotateBitmap;
     }
 
 }

@@ -1,8 +1,12 @@
 package com.loisaldana.sampledungeoncrawler;
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+
+import java.io.CharArrayReader;
 
 public class Projectile {
 
@@ -25,6 +29,45 @@ public class Projectile {
 
     public int GetBulletPosY(){ return bulletY; }
     public void SetBulletPosY( int newBulletY ){ bulletY = newBulletY; }
+
+    public Projectile (Context context)
+    {
+        bulletBitmap[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet1);
+        bulletBitmap[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet2);
+        bulletBitmap[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet3);
+        bulletBitmap[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet4);
+    }
+
+    public void onDraw(Canvas canvas, int posX, int posY)
+    {
+        //Draw bullet here
+        if(isActive)
+        {
+
+            if(!setPlayerPosition)
+            {
+                SetBulletPosX(posX + 25);
+                SetBulletPosY(posY - 25);
+                setPlayerPosition = true;
+            }
+            if(spriteStep < 4)
+            {
+                bulletCurrentBitmap = bulletBitmap[tempBitmap];
+                drawBullet(canvas, bulletCurrentBitmap);
+                tempBitmap = tempBitmap + 1;
+                spriteStep = spriteStep + 1;
+            }
+            if(spriteStep == 4)
+            {
+                bulletCurrentBitmap = bulletBitmap[tempBitmap];
+                drawBullet(canvas, bulletCurrentBitmap);
+                tempBitmap = 0;
+                spriteStep = 1;
+
+            }
+
+        }
+    }
 
     void drawBullet(Canvas canvas, Bitmap mapBitmap){
 

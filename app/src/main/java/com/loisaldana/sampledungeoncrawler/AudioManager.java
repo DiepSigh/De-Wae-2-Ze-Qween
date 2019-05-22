@@ -11,6 +11,9 @@ public class AudioManager {
     MediaPlayer score;
     MediaPlayer level;
     MediaPlayer bullet;
+    MediaPlayer reload;
+
+    public boolean realodIsPlayed = false;
 
     private int playerMoveUp = 0;
 
@@ -77,6 +80,21 @@ public class AudioManager {
         }
         bullet.setLooping(false);
         bullet.start();
+    }
+
+    public void PlayReload(Context context)
+    {
+        if(reload == null)
+        {
+            reload = MediaPlayer.create(context, R.raw.reload);
+        }
+        if(!realodIsPlayed)
+        {
+            reload.setLooping(false);
+            reload.start();
+            realodIsPlayed = true;
+        }
+
     }
 
     public void Pause()
