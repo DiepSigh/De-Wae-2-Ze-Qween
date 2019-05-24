@@ -20,6 +20,7 @@ public class Enemy {
     private boolean active;
     public boolean passPlayer = false; // <-- added by Andrey
 
+
     //Getters
     public int getX() { return x; }
     public int getY() { return y; }
@@ -87,6 +88,22 @@ public class Enemy {
     public static double RNG(double min, double max){
         double x = (int)(Math.random()*((max-min)+1))+min;
         return x;
+    }
+
+    //Collision check of bullet and enemy
+    public void BulletCheck(int bulletX, int bulletY, Projectile projectile) {
+        //Check if in range of pixels
+
+        if (x <= (bulletX + 150) && x >= bulletX && y >= bulletY && y < (bulletY + 150) && projectile.isActive) {
+            projectile.isActive = false;
+            projectile.SetBulletPosX(projectile.bulletStartPositionX);
+            projectile.SetBulletPosY(projectile.bulletStartPositionY);
+            //Reset enemy to random position at screenWidth
+            x = screenWidth;
+            double temp;
+            temp = RNG(0, screenHeight-200);
+            y = (int)Math.round(temp);
+        }
     }
 
 }

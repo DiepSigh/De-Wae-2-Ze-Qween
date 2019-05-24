@@ -136,7 +136,9 @@ public class GameView extends View {
         laserCannon.SetWeaponPosX(character.GetPlayerPosX());
         laserCannon.SetWeaponPosY(character.GetPlayerPosY());
         bullet.SetBulletPosX(character.GetPlayerPosX());
-        bullet.SetBulletPosY(character.GetPlayerPosX());
+        bullet.SetBulletPosY(character.GetPlayerPosY());
+        bullet.bulletStartPositionX = bullet.GetBulletPosX();
+        bullet.bulletStartPositionY = bullet.GetBulletPosY();
         character.playerTempScore = character.GetPlayerScore();
         character.getRandomIntegerBetweenRange(0,4);
         audioManager.PlayBgTheme(gameViewContext);
@@ -145,9 +147,15 @@ public class GameView extends View {
     //Update function is here
     void Update()
     {
+
+        System.out.println(bullet.isActive);
         //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
+
+        //hitbox check with enemy and projectile
+        enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet);
+        tails.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet);
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
@@ -158,15 +166,9 @@ public class GameView extends View {
             laserCannon.SetWeaponPosX(character.GetPlayerPosX());
             laserCannon.SetWeaponPosY(character.GetPlayerPosY());
         }
-        if(character.playerShots)
-        {
-            bullet.isActive = true;
-            audioManager.PlayBullet(gameViewContext);
-        }
-        else
-        {
+
             character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity.
-        }
+
     }
 
     //If we touch screen we changing player's movement...
@@ -179,6 +181,10 @@ public class GameView extends View {
         if(x > laserCannon.buttonX && y > laserCannon.buttonY && x < laserCannon.buttonX + laserCannon.buttonCurrent.getWidth() &&
                 y < laserCannon.buttonY + laserCannon.buttonCurrent.getHeight() && character.reload >= 360)
         {
+            bullet.SetBulletPosX(character.GetPlayerPosX());
+            bullet.SetBulletPosY(character.GetPlayerPosY() + 50);
+            bullet.isActive = true;
+            audioManager.PlayBullet(gameViewContext);
             laserCannon.weaponButtonClicked = true;
             character.playerShots = true;
             character.shotIsReady = false;

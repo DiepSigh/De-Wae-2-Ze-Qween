@@ -48,7 +48,7 @@ public class Weapon {
     void drawButtonWeapon(Canvas canvas, int x, int y, boolean status, boolean statusCharacter)
     {
         buttonX = x / 2 - 100;
-        buttonY = y - 200;
+        buttonY = y - 175;
 
         System.out.println(status);
 

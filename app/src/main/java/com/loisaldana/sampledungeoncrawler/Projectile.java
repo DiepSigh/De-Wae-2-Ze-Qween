@@ -11,8 +11,11 @@ public class Projectile {
 
 
     Bitmap bulletBitmap[] = new Bitmap[4];
+    Bitmap explosion[] = new Bitmap[5];
     Bitmap bulletCurrentBitmap;
 
+    public int bulletStartPositionX;
+    public int bulletStartPositionY;
 
     private int bulletX;
     private int bulletY;
@@ -20,7 +23,11 @@ public class Projectile {
     int spriteStep = 1;
     int bulletSpeed = 25;
 
+    private int explosionX;
+    private int explosionY;
+
     public boolean isActive = false;
+    public boolean explosionIsActive = false;
     public boolean setPlayerPosition = false;
 
     public int GetBulletPosX(){ return bulletX; }
@@ -29,12 +36,24 @@ public class Projectile {
     public int GetBulletPosY(){ return bulletY; }
     public void SetBulletPosY( int newBulletY ){ bulletY = newBulletY; }
 
+    public int GetExplosionPosX(){ return explosionX; }
+    public void SetExplosionPosX(int newExplosionX ){ explosionX = newExplosionX;}
+
+    public int GetExplosionPosY(){ return explosionY; }
+    public void SetExplosionPosY( int newExplosionY ){ explosionY = newExplosionY; }
+
     public Projectile (Context context)
     {
         bulletBitmap[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet1);
         bulletBitmap[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet2);
         bulletBitmap[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet3);
         bulletBitmap[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet4);
+
+        explosion[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_1);
+        explosion[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_2);
+        explosion[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_3);
+        explosion[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_4);
+        explosion[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_5);
     }
 
     public void onDraw(Canvas canvas, int posX, int posY)
