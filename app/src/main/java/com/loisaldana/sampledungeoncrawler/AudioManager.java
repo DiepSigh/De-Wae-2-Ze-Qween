@@ -59,6 +59,7 @@ public class AudioManager {
         {
             score = MediaPlayer.create(context, R.raw.score);
         }
+        score.setLooping(false);
         score.start();
     }
 

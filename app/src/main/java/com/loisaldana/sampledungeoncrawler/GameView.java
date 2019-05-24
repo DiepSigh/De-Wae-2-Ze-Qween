@@ -61,7 +61,9 @@ public class GameView extends View {
         }
 
         bullet.onDraw(canvas, bullet.GetBulletPosX(), bullet.GetBulletPosY());
+        laserCannon.drawButtonBG(canvas, character);
         laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady, character.playerHasCannon);
+        laserCannon.drawTextButton(canvas, character);
 
         if(!gameRun)
         {OnStart(); gameRun = true;}
@@ -71,17 +73,9 @@ public class GameView extends View {
     void OnStart()
     {
         character.fontFaceLevel = fontFaceLevel;
-        character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
-        character.SetPlayerPosY(0); // here we define start position for player on Y
-        character.SetPlayerSpeed(0);
-        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
-        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
-        bullet.SetBulletPosX(character.GetPlayerPosX());
-        bullet.SetBulletPosY(character.GetPlayerPosY());
-        bullet.bulletStartPositionX = bullet.GetBulletPosX();
-        bullet.bulletStartPositionY = bullet.GetBulletPosY();
-        character.playerTempScore = character.GetPlayerScore();
-        character.getRandomIntegerBetweenRange(0,4);
+        character.PlayerStart();
+        bullet.ProjectileStart(character);
+        laserCannon.WeaponStart(character);
         audioManager.PlayBgTheme(gameViewContext);
     }
 

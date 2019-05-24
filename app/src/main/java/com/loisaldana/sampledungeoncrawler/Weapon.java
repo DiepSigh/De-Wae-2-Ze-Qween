@@ -25,7 +25,11 @@ public class Weapon {
     private int weaponY;
 
     private  Canvas indicatorCanvas;
+    private Canvas buttonBGCanvas;
+    private Canvas textBGCanvas;
     private Paint indicatorWeapon = new Paint();
+    private Paint buttonBG = new Paint();
+    private Paint textButton = new Paint();
 
     public int GetWeaponPosX(){ return weaponX; }
     public void SetWeaponPosX(int newWeaponX){ weaponX = newWeaponX; }
@@ -44,11 +48,17 @@ public class Weapon {
     }
 
 
+    public void WeaponStart(Player character)
+    {
+        SetWeaponPosX(character.GetPlayerPosX());
+        SetWeaponPosY(character.GetPlayerPosY());
+    }
+
     //Draw button on canvas
     void drawButtonWeapon(Canvas canvas, int x, int y, boolean status, boolean statusCharacter)
     {
-        buttonX = x / 2 - 100;
-        buttonY = y - 175;
+        buttonX = x - 200;
+        buttonY = y - 200;
 
         //System.out.println(status);
 
@@ -72,6 +82,50 @@ public class Weapon {
 
     }
 
+    void drawButtonBG(Canvas canvas, Player character)
+    {
+        if(character.playerHasCannon)
+        {
+            buttonBGCanvas = canvas;
+
+
+            if(weaponIsReady)
+            {
+                buttonBG.setColor(Color.RED);
+                buttonBG.setAlpha(150);
+
+            }
+            else
+            {
+
+                buttonBG.setColor(Color.LTGRAY);
+                buttonBG.setAlpha(50);
+            }
+
+            buttonBG.setShadowLayer(5,5,5, Color.BLACK);
+            buttonBGCanvas.drawCircle(buttonX + 90,buttonY + 90,90, buttonBG);
+
+
+        }
+
+    }
+
+    void drawTextButton(Canvas canvas, Player character)
+    {
+        textBGCanvas = canvas;
+        if(weaponIsReady)
+        {
+            textButton.setColor(Color.YELLOW);
+            textButton.setTextSize(60);
+            textButton.setTypeface(character.fontFaceLevel);
+            textButton.setShadowLayer(5,5,5, Color.BLACK);
+            textButton.setAntiAlias(true);
+
+            textBGCanvas.drawText("FIRE", buttonX + 25, buttonY + 115, textButton);
+        }
+
+    }
+
     //Draw weapon function
     void drawWeapon(Canvas canvas, Bitmap mapBitmap){
 
@@ -83,6 +137,7 @@ public class Weapon {
 
         canvas.drawBitmap(mapBitmap, x, y,null);
     }
+
 
 
     //Draw weapon indicator on HUD

@@ -59,6 +59,14 @@ public class Projectile {
         explosion[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_5);
     }
 
+    public void ProjectileStart(Player character)
+    {
+        SetBulletPosX(character.GetPlayerPosX());
+        SetBulletPosY(character.GetPlayerPosY());
+        bulletStartPositionX = GetBulletPosX();
+        bulletStartPositionY = GetBulletPosY();
+    }
+
     public void onDraw(Canvas canvas, int posX, int posY)
     {
         System.out.println("EXPLOSION IS ACTIVE    " + explosionIsActive);

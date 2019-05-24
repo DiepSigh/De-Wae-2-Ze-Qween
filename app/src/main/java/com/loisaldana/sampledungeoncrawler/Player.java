@@ -32,6 +32,7 @@ public class Player  {
     public boolean hitSpriteIsActive = false;
     public boolean damageSpriteIsActive = false;
     public boolean killScoreIsActive = false;
+    public boolean levelUp = false;
     public int damageSpriteCounter = 0;
 
     public int buttonPlayAgainX;
@@ -64,6 +65,7 @@ public class Player  {
     private int playerScore = 0;
     public int playerTempScore;
     private int playerLevel = 1;
+    public  int levelLimit = 100;
     public int playerAmmo = 5;
     private int shotEventCounter = 0;
     public boolean shotIsReady = false;
@@ -113,6 +115,16 @@ public class Player  {
     public int sizeLevelMsg = 10;
     public int timerForLvlMsg = 0;
     public double randomColorMsg;
+
+
+    public void PlayerStart()
+    {
+        SetPlayerPosX(playerCurrentBitmap.getWidth() - playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        SetPlayerPosY(0); // here we define start position for player on Y
+        SetPlayerSpeed(0);
+        playerTempScore = GetPlayerScore();
+        getRandomIntegerBetweenRange(0,4);
+    }
 
     //Constructor
     public Player (Context context)
@@ -178,7 +190,6 @@ public class Player  {
                 sprite_wings_up = true;
                 spriteStep = 1;
                 tempBitmap = 0;
-
             }
             else
             {
@@ -201,7 +212,6 @@ public class Player  {
             }
 
         }
-
 
         //Draw Weapon sprite
         if(playerHasCannon && !isDead)
@@ -235,21 +245,26 @@ public class Player  {
         drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
 
         // Draw score sprite on HUD
-        if(playerTempScore == GetPlayerScore() - 100 && timerForLvlMsg < 20)
+        if(playerTempScore == GetPlayerScore() - levelLimit)
         {
-            drawLevelUp(canvas, fontFaceLevel);
-            timerForLvlMsg = timerForLvlMsg + 1;
+            levelUp = true;
             audioManager.PlayLevel(gameViewContext);
 
         }
+        if(levelUp && timerForLvlMsg < 20)
+        {
+            drawLevelUp(canvas, fontFaceLevel);
+            timerForLvlMsg = timerForLvlMsg + 1;
+        }
         if(timerForLvlMsg >= 20)
         {
+            levelUp = false;
+            levelLimit = levelLimit + 100;
             timerForLvlMsg = 0;
             sizeLevelMsg = 10;
             playerTempScore = GetPlayerScore();
-            SetPlayerLevel(GetPlayerLevel() + 1);
             getRandomIntegerBetweenRange(0,3);
-
+            SetPlayerLevel(GetPlayerLevel() + 1);
             //Increases Speed every level
             enemy.increaseVel(4);
 
