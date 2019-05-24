@@ -255,6 +255,10 @@ public class GameView extends View {
 //        Bg1BitMap.
 
 
+        //hitbox check with enemy and projectile
+        enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY());
+        tails.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY());
+
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
             audioManager.PlayPlayerMoveUp(gameViewContext);
