@@ -245,7 +245,7 @@ public class Player  {
 
         if(playerAmmo > 0)
         {
-            reload = reload + 2;
+            reload = reload + 5;
         }
 
         if(reload >= 360)
@@ -271,7 +271,7 @@ public class Player  {
                 playerShots = false;
             }
         }
-        if(reload == 8)
+        if(reload == 20)
         {
             playerShots = false;
             shotIsReady = false;

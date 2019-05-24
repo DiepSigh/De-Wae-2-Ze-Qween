@@ -94,10 +94,15 @@ public class Enemy {
     public void BulletCheck(int bulletX, int bulletY, Projectile projectile) {
         //Check if in range of pixels
 
-        if (x <= (bulletX + 150) && x >= bulletX && y >= bulletY && y < (bulletY + 150) && projectile.isActive) {
+        if (x <= (bulletX + 200) && x >= bulletX && y >= bulletY && y < (bulletY + 200) && projectile.isActive) {
+
             projectile.isActive = false;
+            projectile.explosionIsActive = true;
+            projectile.SetExplosionPosX(bulletX - 25);
+            projectile.SetExplosionPosY(bulletY - 25);
             projectile.SetBulletPosX(projectile.bulletStartPositionX);
             projectile.SetBulletPosY(projectile.bulletStartPositionY);
+
             //Reset enemy to random position at screenWidth
             x = screenWidth;
             double temp;

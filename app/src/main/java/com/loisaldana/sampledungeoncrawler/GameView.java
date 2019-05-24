@@ -148,7 +148,7 @@ public class GameView extends View {
     void Update()
     {
 
-        System.out.println(bullet.isActive);
+        //System.out.println(bullet.isActive);
         //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
@@ -179,15 +179,15 @@ public class GameView extends View {
         int y = (int)event.getY();
 
         if(x > laserCannon.buttonX && y > laserCannon.buttonY && x < laserCannon.buttonX + laserCannon.buttonCurrent.getWidth() &&
-                y < laserCannon.buttonY + laserCannon.buttonCurrent.getHeight() && character.reload >= 360)
+                y < laserCannon.buttonY + laserCannon.buttonCurrent.getHeight() && character.reload >= 360 && !laserCannon.weaponButtonClicked)
         {
             bullet.SetBulletPosX(character.GetPlayerPosX());
             bullet.SetBulletPosY(character.GetPlayerPosY() + 50);
             bullet.isActive = true;
             audioManager.PlayBullet(gameViewContext);
-            laserCannon.weaponButtonClicked = true;
             character.playerShots = true;
             character.shotIsReady = false;
+            laserCannon.weaponButtonClicked = true;
             //System.out.println("BUTTON IS PRESSED");
         }
 

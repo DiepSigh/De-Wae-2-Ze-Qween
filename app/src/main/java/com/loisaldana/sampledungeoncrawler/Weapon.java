@@ -50,7 +50,7 @@ public class Weapon {
         buttonX = x / 2 - 100;
         buttonY = y - 175;
 
-        System.out.println(status);
+        //System.out.println(status);
 
         if(statusCharacter)
         {
