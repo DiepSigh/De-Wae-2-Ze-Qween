@@ -12,6 +12,8 @@ public class AudioManager {
     MediaPlayer level;
     MediaPlayer bullet;
     MediaPlayer reload;
+    MediaPlayer explosion;
+    MediaPlayer restart;
 
     public boolean realodIsPlayed = false;
 
@@ -95,6 +97,26 @@ public class AudioManager {
             realodIsPlayed = true;
         }
 
+    }
+
+    public void PlayExplosion(Context context)
+    {
+        if(explosion == null)
+        {
+            explosion = MediaPlayer.create(context, R.raw.expl);
+        }
+        explosion.setLooping(false);
+        explosion.start();
+    }
+
+    public void PlayRestart(Context context)
+    {
+        if(restart == null)
+        {
+            restart = MediaPlayer.create(context, R.raw.restart);
+        }
+        restart.setLooping(false);
+        restart.start();
     }
 
     public void Pause()

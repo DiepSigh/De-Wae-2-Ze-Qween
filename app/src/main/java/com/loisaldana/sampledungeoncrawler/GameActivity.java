@@ -29,7 +29,7 @@ public class GameActivity extends AppCompatActivity {
 
         //Changing font family here :: added by Andrey  ::
         TextView textView = new TextView(this);
-        Typeface typeFace = ResourcesCompat.getFont(this, R.font.font);
+        Typeface typeFace = ResourcesCompat.getFont(this, R.font.pokemon);
         textView.setTypeface(typeFace);
         gameView.fontFaceLevel = typeFace; // <--- assigning font face for our game level
         //
