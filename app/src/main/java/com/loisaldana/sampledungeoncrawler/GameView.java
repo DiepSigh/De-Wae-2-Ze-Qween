@@ -20,12 +20,13 @@ public class GameView extends View {
     private int canvasHeight;
     boolean gameRun = false;
     Typeface fontFaceLevel;
+    boolean firstRun = true;
 
+    BackGroundController BGController = new BackGroundController();
     Player character = new Player(); // creating player object here
     Weapon laserCannon = new Weapon(); // creating weapon object
     Projectile bullet = new Projectile(); // creating bullet object
     AudioManager audioManager = new AudioManager();
-    Bitmap mapBitmap; // this is bitmap we using for background
 
     Enemy enemy;
     Enemy tails;
@@ -50,11 +51,27 @@ public class GameView extends View {
         bullet.bulletBitmap[1] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet2);
         bullet.bulletBitmap[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet3);
         bullet.bulletBitmap[3] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet4);
-        mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
 
         enemy = new Enemy(context, true);
         tails = new Enemy(context, false);
-     }
+    }
+
+    void OnStart(Canvas canvas)
+    {
+
+        //BGController.Start(canvas, this);
+
+        character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        character.SetPlayerPosY(0); // here we define start position for player on Y
+        character.SetPlayerSpeed(0);
+        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
+        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
+        bullet.SetBulletPosX(character.GetPlayerPosX());
+        bullet.SetBulletPosY(character.GetPlayerPosX());
+        character.playerTempScore = character.GetPlayerScore();
+        character.getRandomIntegerBetweenRange(0,4);
+        audioManager.PlayBgTheme(gameViewContext);
+    }
 
     /* Here we can add images that we want to draw. This function also updates */
     @Override
@@ -63,10 +80,12 @@ public class GameView extends View {
         canvasWidth = canvas.getWidth(); // if we needed to reference to it
         canvasHeight = canvas.getHeight(); // if we needed to reference to it
 
+        if(firstRun){
+            BGController.Start(canvas, this);
+            firstRun = false;
+        }
 
-        canvas.drawBitmap(GetResizeBitmap(mapBitmap, canvasWidth, canvasHeight), 0, 0, null); // call background image on canvas with resize
-
-
+        BGController.drawBackgrounds(canvas,this);
         //Draw player's spite with animation
         if(character.sprite_wings_up && !character.isDead)
         {
@@ -74,6 +93,7 @@ public class GameView extends View {
             {
                 character.playerCurrentBitmap = character.playerBitmap[character.tempBitmap];
                 character.drawPlayer(canvas, GetRotateBitmap(character.playerBitmap[character.tempBitmap], character.GetAngleRotation()));
+
                 character.sprite_wings_up = false;
                 character.spriteStep = character.spriteStep + 1;
                 character.tempBitmap = character.tempBitmap + 1;
@@ -220,23 +240,10 @@ public class GameView extends View {
         character.drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
 
         if(!gameRun)
-        {OnStart(); gameRun = true;}
+        {OnStart(canvas); gameRun = true;}
 
     }
 
-    void OnStart()
-    {
-        character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
-        character.SetPlayerPosY(0); // here we define start position for player on Y
-        character.SetPlayerSpeed(0);
-        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
-        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
-        bullet.SetBulletPosX(character.GetPlayerPosX());
-        bullet.SetBulletPosY(character.GetPlayerPosX());
-        character.playerTempScore = character.GetPlayerScore();
-        character.getRandomIntegerBetweenRange(0,4);
-        audioManager.PlayBgTheme(gameViewContext);
-    }
 
     //Update function is here
     void Update()
@@ -244,6 +251,9 @@ public class GameView extends View {
         //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
+///MIKE
+//        Bg1BitMap.
+
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
@@ -305,8 +315,6 @@ public class GameView extends View {
         Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
         return rotateBitmap;
     }
-
-
 }
 
 

@@ -135,7 +135,6 @@ public class Player  {
     //All player's movements are here
     void PlayerMovements()
     {
-
         //if player's sprite hits top top position we switch speed backward
         if(playerY < maxPlayerY - playerCurrentBitmap.getHeight() / 2)
         {
