@@ -98,6 +98,7 @@ public class Enemy {
             character.killScoreIsActive = true;
             character.spriteKillScoreX = bulletX + 50;
             character.spriteKillScoreY = bulletY + 50;
+            projectile.bulletSpeed = 25;
             projectile.SetExplosionPosX(bulletX - 125);
             projectile.SetExplosionPosY(bulletY - 125);
             projectile.SetBulletPosX(projectile.bulletStartPositionX);
