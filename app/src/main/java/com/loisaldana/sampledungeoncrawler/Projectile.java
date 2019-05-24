@@ -69,7 +69,7 @@ public class Projectile {
 
     public void onDraw(Canvas canvas, int posX, int posY)
     {
-        System.out.println("EXPLOSION IS ACTIVE    " + explosionIsActive);
+        //System.out.println("EXPLOSION IS ACTIVE    " + explosionIsActive);
         //Draw bullet here
         if(isActive)
         {

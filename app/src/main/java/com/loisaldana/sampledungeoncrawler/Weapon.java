@@ -89,7 +89,7 @@ public class Weapon {
             buttonBGCanvas = canvas;
 
 
-            if(weaponIsReady)
+            if(weaponIsReady && character.playerAmmo > 0)
             {
                 buttonBG.setColor(Color.RED);
                 buttonBG.setAlpha(150);
@@ -113,7 +113,7 @@ public class Weapon {
     void drawTextButton(Canvas canvas, Player character)
     {
         textBGCanvas = canvas;
-        if(weaponIsReady)
+        if(weaponIsReady && character.playerAmmo > 0)
         {
             textButton.setColor(Color.YELLOW);
             textButton.setTextSize(60);
