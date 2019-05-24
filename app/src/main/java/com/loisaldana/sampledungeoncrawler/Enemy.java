@@ -6,9 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
-//TO DO
-//Set up animation and class to work with 2 different spritesheets
-
 public class Enemy {
     private Bitmap img[] = new Bitmap[3];
     private int x, y;
@@ -18,7 +15,9 @@ public class Enemy {
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean hitPlayer;
     private boolean active;
-    public boolean passPlayer = false; // <-- added by Andrey
+    public boolean passPlayer; // <-- added by Andrey
+
+
 
     //Getters
     public int getX() { return x; }
@@ -54,6 +53,7 @@ public class Enemy {
 
         //Hits player once per spawn
         hitPlayer = false;
+        passPlayer = false;
     }
 
     //draws enemy
@@ -73,11 +73,9 @@ public class Enemy {
             double temp;
             //Reset pos/respawn
             x = screenWidth;
-            //temp = RNG(0, screenHeight-150);
-            //y = (int) Math.round(temp);
             y = playerY;
             hitPlayer = false;
-            passPlayer = false;
+            passPlayer = true;
         } else {
             x -= xVel;
             //y += yVel;
@@ -87,6 +85,34 @@ public class Enemy {
     public static double RNG(double min, double max){
         double x = (int)(Math.random()*((max-min)+1))+min;
         return x;
+    }
+
+    //Collision check of bullet and enemy
+    public void BulletCheck(int bulletX, int bulletY, Projectile projectile, Player character, AudioManager audioManager, Context context) {
+        //Check if in range of pixels
+
+        if (x <= (bulletX + 200) && x >= bulletX && y >= bulletY && y < (bulletY + 200) && projectile.isActive) {
+
+            projectile.isActive = false;
+            projectile.explosionIsActive = true;
+            character.killScoreIsActive = true;
+            character.spriteKillScoreX = bulletX + 50;
+            character.spriteKillScoreY = bulletY + 50;
+            projectile.bulletSpeed = 25;
+            projectile.SetExplosionPosX(bulletX - 125);
+            projectile.SetExplosionPosY(bulletY - 125);
+            projectile.SetBulletPosX(projectile.bulletStartPositionX);
+            projectile.SetBulletPosY(projectile.bulletStartPositionY);
+            character.SetPlayerScore(character.GetPlayerScore() + 50);
+            audioManager.PlayExplosion(context);
+
+
+            //Reset enemy to random position at screenWidth
+            x = screenWidth;
+            double temp;
+            temp = RNG(0, screenHeight-200);
+            y = (int)Math.round(temp);
+        }
     }
 
 }

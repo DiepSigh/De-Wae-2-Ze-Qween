@@ -11,6 +11,11 @@ public class AudioManager {
     MediaPlayer score;
     MediaPlayer level;
     MediaPlayer bullet;
+    MediaPlayer reload;
+    MediaPlayer explosion;
+    MediaPlayer restart;
+
+    public boolean realodIsPlayed = false;
 
     private int playerMoveUp = 0;
 
@@ -54,6 +59,7 @@ public class AudioManager {
         {
             score = MediaPlayer.create(context, R.raw.score);
         }
+        score.setLooping(false);
         score.start();
     }
 
@@ -77,6 +83,41 @@ public class AudioManager {
         }
         bullet.setLooping(false);
         bullet.start();
+    }
+
+    public void PlayReload(Context context)
+    {
+        if(reload == null)
+        {
+            reload = MediaPlayer.create(context, R.raw.reload);
+        }
+        if(!realodIsPlayed)
+        {
+            reload.setLooping(false);
+            reload.start();
+            realodIsPlayed = true;
+        }
+
+    }
+
+    public void PlayExplosion(Context context)
+    {
+        if(explosion == null)
+        {
+            explosion = MediaPlayer.create(context, R.raw.expl);
+        }
+        explosion.setLooping(false);
+        explosion.start();
+    }
+
+    public void PlayRestart(Context context)
+    {
+        if(restart == null)
+        {
+            restart = MediaPlayer.create(context, R.raw.restart);
+        }
+        restart.setLooping(false);
+        restart.start();
     }
 
     public void Pause()
