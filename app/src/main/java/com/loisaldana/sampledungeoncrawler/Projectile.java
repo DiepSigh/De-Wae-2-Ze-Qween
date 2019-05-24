@@ -13,6 +13,7 @@ public class Projectile {
     Bitmap bulletBitmap[] = new Bitmap[4];
     Bitmap explosion[] = new Bitmap[5];
     Bitmap bulletCurrentBitmap;
+    Bitmap explosionCurrentBitmap;
 
     public int bulletStartPositionX;
     public int bulletStartPositionY;
@@ -25,6 +26,8 @@ public class Projectile {
 
     private int explosionX;
     private int explosionY;
+    int tempExplosionBitmap = 0;
+    int spriteExplosionStep = 1;
 
     public boolean isActive = false;
     public boolean explosionIsActive = false;
@@ -56,12 +59,20 @@ public class Projectile {
         explosion[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.expl_5);
     }
 
+    public void ProjectileStart(Player character)
+    {
+        SetBulletPosX(character.GetPlayerPosX());
+        SetBulletPosY(character.GetPlayerPosY());
+        bulletStartPositionX = GetBulletPosX();
+        bulletStartPositionY = GetBulletPosY();
+    }
+
     public void onDraw(Canvas canvas, int posX, int posY)
     {
+        System.out.println("EXPLOSION IS ACTIVE    " + explosionIsActive);
         //Draw bullet here
         if(isActive)
         {
-
             if(!setPlayerPosition)
             {
                 SetBulletPosX(posX + 25);
@@ -81,10 +92,37 @@ public class Projectile {
                 drawBullet(canvas, bulletCurrentBitmap);
                 tempBitmap = 0;
                 spriteStep = 1;
-
             }
-
         }
+
+        if(explosionIsActive)
+        {
+            //System.out.println("EXPLOSION IS ACTIVE");
+            if(spriteExplosionStep < 5)
+            {
+                explosionCurrentBitmap = explosion[tempExplosionBitmap];
+                drawExplosion(canvas, explosionCurrentBitmap);
+                tempExplosionBitmap = tempExplosionBitmap + 1;
+                spriteExplosionStep = spriteExplosionStep + 1;
+            }
+            if(spriteExplosionStep == 5)
+            {
+
+                explosionCurrentBitmap = explosion[tempExplosionBitmap];
+                drawExplosion(canvas, explosionCurrentBitmap);
+                tempExplosionBitmap = 0;
+                spriteExplosionStep = 1;
+                explosionX = bulletX;
+                explosionY = bulletY;
+                explosionIsActive = false;
+            }
+        }
+    }
+
+
+    void drawExplosion(Canvas canvas, Bitmap mapBitmap)
+    {
+        canvas.drawBitmap(mapBitmap, explosionX, explosionY,null);
     }
 
     void drawBullet(Canvas canvas, Bitmap mapBitmap){

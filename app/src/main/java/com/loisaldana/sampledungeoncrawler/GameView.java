@@ -22,7 +22,6 @@ public class GameView extends View {
     boolean gameRun = false;
     Typeface fontFaceLevel;
 
-
     Player character;
     Weapon laserCannon;
     Projectile bullet; // creating bullet object
@@ -52,17 +51,7 @@ public class GameView extends View {
         canvasHeight = canvas.getHeight(); // if we needed to reference to it
 
         canvas.drawBitmap(GetResizeBitmap(mapBitmap, canvasWidth, canvasHeight), 0, 0, null); // call background image on canvas with resize
-        character.onDraw(canvas);
-
-        if(enemy.passPlayer && !character.isDead)
-        {
-            character.drawSrore(canvas, character.playerScoreSprite); // call player's score on HUD
-        }
-
-        if(character.damageSpriteIsActive && character.spriteDamageY > 0  && !character.isDead)
-        {
-            character.drawDamage(canvas, character.playerDamageSprite);
-        }
+        character.onDraw(canvas, enemy, tails, laserCannon);
 
         //Draws and respawns enemy when it reaches the end
         enemy.draw(canvas, character.GetPlayerPosY());
@@ -71,57 +60,10 @@ public class GameView extends View {
             tails.draw(canvas, temp);
         }
 
-
-        bullet.onDraw(canvas, character.GetPlayerPosX(), character.GetPlayerPosY());
+        bullet.onDraw(canvas, bullet.GetBulletPosX(), bullet.GetBulletPosY());
+        laserCannon.drawButtonBG(canvas, character);
         laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady, character.playerHasCannon);
-
-        //Draw Weapon sprite
-        if(character.playerHasCannon && !character.isDead)
-        {
-            laserCannon.drawWeapon(canvas, GetRotateBitmap(laserCannon.weaponBitmap, character.GetAngleRotation()));
-        }
-
-        if(character.playerAmmo >0)
-        {
-            laserCannon.drawIndicator(canvas, canvasWidth/2 + 425, 25, character.reload);
-            if(laserCannon.weaponIsReady)
-            {
-                laserCannon.drawWeaponReadyIcon(canvas, laserCannon.weaponReadyIcon, canvasWidth/2 + 405, 20);
-            }
-        }
-
-        // Draw score sprite on HUD
-        if(character.playerTempScore == character.GetPlayerScore() - 100 && character.timerForLvlMsg < 20)
-        {
-            character.drawLevelUp(canvas, fontFaceLevel);
-            character.timerForLvlMsg = character.timerForLvlMsg + 1;
-            audioManager.PlayLevel(gameViewContext);
-
-        }
-        if(character.timerForLvlMsg >= 20)
-        {
-            character.timerForLvlMsg = 0;
-            character.sizeLevelMsg = 10;
-            character.playerTempScore = character.GetPlayerScore();
-            character.SetPlayerLevel(character.GetPlayerLevel() + 1);
-            character.getRandomIntegerBetweenRange(0,3);
-
-            //Increases Speed every level
-            enemy.increaseVel(4);
-
-            //Set tails to active when x level and increase vel if already active
-            if (tails.getActive()){
-                tails.increaseVel(3);
-            }else {
-                if (character.GetPlayerLevel() == 2) {
-                    tails.setActive(true);
-                }
-            }
-        }
-
-        //System.out.println("PLAYER'S REAL SCORE  " + character.GetPlayerScore());
-        character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
-        character.drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
+        laserCannon.drawTextButton(canvas, character);
 
         if(!gameRun)
         {OnStart(); gameRun = true;}
@@ -130,17 +72,10 @@ public class GameView extends View {
 
     void OnStart()
     {
-        character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
-        character.SetPlayerPosY(0); // here we define start position for player on Y
-        character.SetPlayerSpeed(0);
-        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
-        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
-        bullet.SetBulletPosX(character.GetPlayerPosX());
-        bullet.SetBulletPosY(character.GetPlayerPosY());
-        bullet.bulletStartPositionX = bullet.GetBulletPosX();
-        bullet.bulletStartPositionY = bullet.GetBulletPosY();
-        character.playerTempScore = character.GetPlayerScore();
-        character.getRandomIntegerBetweenRange(0,4);
+        character.fontFaceLevel = fontFaceLevel;
+        character.PlayerStart();
+        bullet.ProjectileStart(character);
+        laserCannon.WeaponStart(character);
         audioManager.PlayBgTheme(gameViewContext);
     }
 
@@ -148,14 +83,13 @@ public class GameView extends View {
     void Update()
     {
 
-        System.out.println(bullet.isActive);
         //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
 
         //hitbox check with enemy and projectile
-        enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet);
-        tails.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet);
+        enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet, character, audioManager, character.gameViewContext);
+        tails.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet, character, audioManager, character.gameViewContext);
 
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
@@ -169,6 +103,10 @@ public class GameView extends View {
 
             character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity.
 
+        if(character.isDead)
+        {
+            audioManager.bgTheme.stop();
+        }
     }
 
     //If we touch screen we changing player's movement...
@@ -179,16 +117,24 @@ public class GameView extends View {
         int y = (int)event.getY();
 
         if(x > laserCannon.buttonX && y > laserCannon.buttonY && x < laserCannon.buttonX + laserCannon.buttonCurrent.getWidth() &&
-                y < laserCannon.buttonY + laserCannon.buttonCurrent.getHeight() && character.reload >= 360)
+                y < laserCannon.buttonY + laserCannon.buttonCurrent.getHeight() && character.reload >= 360 && !laserCannon.weaponButtonClicked)
         {
             bullet.SetBulletPosX(character.GetPlayerPosX());
             bullet.SetBulletPosY(character.GetPlayerPosY() + 50);
             bullet.isActive = true;
             audioManager.PlayBullet(gameViewContext);
-            laserCannon.weaponButtonClicked = true;
             character.playerShots = true;
             character.shotIsReady = false;
+            laserCannon.weaponButtonClicked = true;
             //System.out.println("BUTTON IS PRESSED");
+        }
+
+        if(x > character.buttonPlayAgainX && y > character.buttonPlayAgainY && x < character.buttonPlayAgainX + character.playAgain.getWidth() &&
+               y < character.buttonPlayAgainY + character.playAgain.getHeight() && character.isDead && !character.buttonPlayerAgainIsPressed)
+        {
+            System.out.println("WE RELOAD SCENE HERE...");
+            audioManager.PlayRestart(gameViewContext);
+            character.buttonPlayerAgainIsPressed = true; // <--- we need to turn it back to false after
         }
 
         if(event.getAction() == MotionEvent.ACTION_DOWN && !character.playerShots)

@@ -15,7 +15,8 @@ public class Enemy {
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private boolean hitPlayer;
     private boolean active;
-    public boolean passPlayer = false; // <-- added by Andrey
+    public boolean passPlayer; // <-- added by Andrey
+
 
 
     //Getters
@@ -52,6 +53,7 @@ public class Enemy {
 
         //Hits player once per spawn
         hitPlayer = false;
+        passPlayer = false;
     }
 
     //draws enemy
@@ -73,7 +75,7 @@ public class Enemy {
             x = screenWidth;
             y = playerY;
             hitPlayer = false;
-            passPlayer = false;
+            passPlayer = true;
         } else {
             x -= xVel;
             //y += yVel;
@@ -86,13 +88,24 @@ public class Enemy {
     }
 
     //Collision check of bullet and enemy
-    public void BulletCheck(int bulletX, int bulletY, Projectile projectile) {
+    public void BulletCheck(int bulletX, int bulletY, Projectile projectile, Player character, AudioManager audioManager, Context context) {
         //Check if in range of pixels
 
-        if (x <= (bulletX + 150) && x >= bulletX && y >= bulletY && y < (bulletY + 150) && projectile.isActive) {
+        if (x <= (bulletX + 200) && x >= bulletX && y >= bulletY && y < (bulletY + 200) && projectile.isActive) {
+
             projectile.isActive = false;
+            projectile.explosionIsActive = true;
+            character.killScoreIsActive = true;
+            character.spriteKillScoreX = bulletX + 50;
+            character.spriteKillScoreY = bulletY + 50;
+            projectile.SetExplosionPosX(bulletX - 125);
+            projectile.SetExplosionPosY(bulletY - 125);
             projectile.SetBulletPosX(projectile.bulletStartPositionX);
             projectile.SetBulletPosY(projectile.bulletStartPositionY);
+            character.SetPlayerScore(character.GetPlayerScore() + 50);
+            audioManager.PlayExplosion(context);
+
+
             //Reset enemy to random position at screenWidth
             x = screenWidth;
             double temp;

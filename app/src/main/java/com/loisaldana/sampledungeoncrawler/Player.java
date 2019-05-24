@@ -14,20 +14,29 @@ import android.graphics.Typeface;
 public class Player  {
 
     private AudioManager audioManager = new AudioManager();
+    Typeface fontFaceLevel;
 
     Context gameViewContext;
     Bitmap playerBitmap[] = new Bitmap[6];
     Bitmap playerCurrentBitmap;
     Bitmap HPBitmap;
-    Bitmap playerScoreSprite;
+    Bitmap playerScoreSprite10;
+    Bitmap playerScoreSprite50;
     Bitmap playerDamageSprite;
     Bitmap hitSprite;
+    Bitmap gameOver;
+    Bitmap playAgain;
 
     public boolean playerHasCannon = true;
     public boolean playerShots = false;
     public boolean hitSpriteIsActive = false;
     public boolean damageSpriteIsActive = false;
+    public boolean killScoreIsActive = false;
+    public boolean levelUp = false;
     public int damageSpriteCounter = 0;
+
+    public int buttonPlayAgainX;
+    public int buttonPlayAgainY;
 
     public int spriteHitX;
     public int spriteHitY;
@@ -37,6 +46,11 @@ public class Player  {
 
     public int spriteScoreX;
     public int spriteScoreY;
+    public int spriteScoreTimer = 0;
+
+    public int spriteKillScoreX;
+    public int spriteKillScoreY;
+    public int spriteKillScoreTimer = 0;
 
     private int playerX;
     private int playerY;
@@ -51,11 +65,13 @@ public class Player  {
     private int playerScore = 0;
     public int playerTempScore;
     private int playerLevel = 1;
+    public  int levelLimit = 100;
     public int playerAmmo = 5;
     private int shotEventCounter = 0;
     public boolean shotIsReady = false;
     public int reload = 0;
 
+    public boolean buttonPlayerAgainIsPressed = false;
     public boolean sprite_wings_up = true;
     public boolean isDead = false;
     int spriteStep = 1;
@@ -100,6 +116,16 @@ public class Player  {
     public int timerForLvlMsg = 0;
     public double randomColorMsg;
 
+
+    public void PlayerStart()
+    {
+        SetPlayerPosX(playerCurrentBitmap.getWidth() - playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        SetPlayerPosY(0); // here we define start position for player on Y
+        SetPlayerSpeed(0);
+        playerTempScore = GetPlayerScore();
+        getRandomIntegerBetweenRange(0,4);
+    }
+
     //Constructor
     public Player (Context context)
     {
@@ -112,14 +138,24 @@ public class Player  {
         playerBitmap[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles6);
 
         HPBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.life);
-        playerScoreSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.point80);
+        playerScoreSprite10 = BitmapFactory.decodeResource(context.getResources(), R.drawable.score10);
+        playerScoreSprite50 = BitmapFactory.decodeResource(context.getResources(), R.drawable.score50);
         playerDamageSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.damage150);
         hitSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.hit200);
+        gameOver = BitmapFactory.decodeResource(context.getResources(), R.drawable.gameover);
+        playAgain = BitmapFactory.decodeResource(context.getResources(), R.drawable.playagain);
     }
 
 
-    public void onDraw(Canvas canvas)
+    public void onDraw(Canvas canvas, Enemy enemy, Enemy tails, Weapon laserCannon)
     {
+        //Draw GAME OVER MENU
+        if(isDead)
+        {
+            drawGameOver(canvas, gameOver);
+            drawPlayAgain(canvas, playAgain);
+        }
+
         //Draw player's spite with animation
         if(sprite_wings_up && !isDead)
         {
@@ -154,7 +190,6 @@ public class Player  {
                 sprite_wings_up = true;
                 spriteStep = 1;
                 tempBitmap = 0;
-
             }
             else
             {
@@ -178,6 +213,84 @@ public class Player  {
 
         }
 
+        //Draw Weapon sprite
+        if(playerHasCannon && !isDead)
+        {
+            laserCannon.drawWeapon(canvas, GetRotateBitmap(laserCannon.weaponBitmap, GetAngleRotation()));
+        }
+
+        if(playerAmmo >0)
+        {
+            laserCannon.drawIndicator(canvas, canvas.getWidth()/2 + 425, 25, reload);
+            if(laserCannon.weaponIsReady)
+            {
+                laserCannon.drawWeaponReadyIcon(canvas, laserCannon.weaponReadyIcon, canvas.getWidth()/2 + 405, 20);
+            }
+        }
+
+
+        if(damageSpriteIsActive && spriteDamageY > 0  && !isDead)
+        {
+            drawDamage(canvas, playerDamageSprite);
+        }
+
+        if(!isDead && spriteScoreTimer < 10)
+        {
+            drawSrore(canvas, playerScoreSprite10, enemy, tails); // call player's score on HUD
+        }
+        drawKillScore(canvas, playerScoreSprite50, enemy, tails);
+
+        //System.out.println("PLAYER'S REAL SCORE  " + character.GetPlayerScore());
+        drawPlayersLifes(canvas, HPBitmap); // call player's HP on HUD
+        drawPlayersStats(canvas, fontFaceLevel); // call player's score on HUD and passing font Family
+
+        // Draw score sprite on HUD
+        if(playerTempScore == GetPlayerScore() - levelLimit)
+        {
+            levelUp = true;
+            audioManager.PlayLevel(gameViewContext);
+
+        }
+        if(levelUp && timerForLvlMsg < 20)
+        {
+            drawLevelUp(canvas, fontFaceLevel);
+            timerForLvlMsg = timerForLvlMsg + 1;
+        }
+        if(timerForLvlMsg >= 20)
+        {
+            levelUp = false;
+            levelLimit = levelLimit + 100;
+            timerForLvlMsg = 0;
+            sizeLevelMsg = 10;
+            playerTempScore = GetPlayerScore();
+            getRandomIntegerBetweenRange(0,3);
+            SetPlayerLevel(GetPlayerLevel() + 1);
+            //Increases Speed every level
+            enemy.increaseVel(4);
+
+            //Set tails to active when x level and increase vel if already active
+            if (tails.getActive()){
+                tails.increaseVel(3);
+            }else {
+                if (GetPlayerLevel() == 2) {
+                    tails.setActive(true);
+                }
+            }
+        }
+
+    }
+
+    void drawPlayAgain(Canvas canvas, Bitmap mapBitmap)
+    {
+        canvas.drawBitmap(mapBitmap, canvas.getWidth() / 2 - playAgain.getWidth() / 2, canvas.getHeight() / 2 + playAgain.getHeight() / 2 + 100,null);
+        buttonPlayAgainX = canvas.getWidth() / 2 - playAgain.getWidth() / 2;
+        buttonPlayAgainY = canvas.getHeight() / 2 + playAgain.getHeight() / 2 + 100;
+    }
+
+    void drawGameOver(Canvas canvas, Bitmap mapBitmap)
+    {
+        canvas.drawBitmap(mapBitmap, canvas.getWidth() / 2 - gameOver.getWidth() / 2, canvas.getHeight() / 2 - gameOver.getHeight() - gameOver.getHeight() / 2,null);
+
     }
 
     void drawDamage(Canvas canvas, Bitmap mapBitmap)
@@ -194,16 +307,51 @@ public class Player  {
         }
     }
 
-    //Draw score sprite
-    void drawSrore (Canvas canvas, Bitmap mapBitmap)
+    void drawKillScore(Canvas canvas, Bitmap mapBitmap, Enemy enemy, Enemy tails)
     {
-        canvas.drawBitmap(mapBitmap, spriteScoreX, spriteScoreY,null);
-        scoreSpriteMovements();
+        if(killScoreIsActive)
+        {
+            canvas.drawBitmap(mapBitmap, spriteKillScoreX, spriteKillScoreY,null);
+            scoreSpriteMovements(enemy, tails);
+        }
+
     }
 
-    void scoreSpriteMovements()
+    //Draw score sprite
+    void drawSrore (Canvas canvas, Bitmap mapBitmap, Enemy enemy, Enemy tails)
     {
-        spriteScoreY -= 35;
+        if(enemy.passPlayer || tails.passPlayer)
+        {
+            canvas.drawBitmap(mapBitmap, spriteScoreX, spriteScoreY,null);
+            scoreSpriteMovements(enemy, tails);
+        }
+
+    }
+
+    void scoreSpriteMovements(Enemy enemy, Enemy tails)
+    {
+        if(spriteScoreTimer < 5 && enemy.passPlayer || spriteScoreTimer < 5 && tails.passPlayer)
+        {
+            spriteScoreY -= 35;
+            spriteScoreTimer = spriteScoreTimer +1;
+        }
+        if(spriteScoreTimer == 5)
+        {
+            spriteScoreTimer = 0;
+            enemy.passPlayer = false;
+            tails.passPlayer = false;
+        }
+
+        if(killScoreIsActive)
+        {
+            spriteKillScoreY -=35;
+            spriteKillScoreTimer = spriteKillScoreTimer + 1;
+        }
+        if(spriteKillScoreTimer > 8)
+        {
+            killScoreIsActive = false;
+            spriteKillScoreTimer = 0;
+        }
     }
 
     //Draw player function
@@ -245,7 +393,7 @@ public class Player  {
 
         if(playerAmmo > 0)
         {
-            reload = reload + 2;
+            reload = reload + 5;
         }
 
         if(reload >= 360)
@@ -271,7 +419,7 @@ public class Player  {
                 playerShots = false;
             }
         }
-        if(reload == 8)
+        if(reload == 20)
         {
             playerShots = false;
             shotIsReady = false;
@@ -296,38 +444,51 @@ public class Player  {
     //Draw player's stats
     void drawPlayersStats(Canvas canvas, Typeface typeface)
     {
-        plScore.setColor(Color.WHITE);
-        plScore.setTextSize(64);
-        plScore.setTypeface(typeface);
-        plScore.setShadowLayer(5,5,5, Color.BLACK);
-        plScore.setAntiAlias(true);
-
-        canvas.drawText("Score :  " + playerScore, 100, 100, plScore);
-
-        plLevel.setColor(Color.YELLOW);
-        plLevel.setTextSize(64);
-        plLevel.setTypeface(typeface);
-        plLevel.setShadowLayer(5,5,5, Color.BLACK);
-        plLevel.setTextAlign(Paint.Align.CENTER);
-        plLevel.setAntiAlias(true);
-
-        canvas.drawText("Level :  " + playerLevel, canvas.getWidth() / 2 - 225 , 100, plLevel);
-
-        if(playerHasCannon)
+        if(isDead)
         {
-            if(playerAmmo > 0)
-            {plAmmo.setColor(Color.GREEN);}
-            else
-            {plAmmo.setColor(Color.RED);}
-            plAmmo.setTextSize(64);
-            plAmmo.setTypeface(typeface);
-            plAmmo.setShadowLayer(5,5,5, Color.BLACK);
-            plAmmo.setTextAlign(Paint.Align.CENTER);
-            plAmmo.setAntiAlias(true);
+            plScore.setColor(Color.GREEN);
+            plScore.setTextSize(128);
+            plScore.setTypeface(typeface);
+            plScore.setShadowLayer(1,1,1, Color.BLACK);
+            plScore.setAntiAlias(true);
 
-            canvas.drawText("Ammo :  " + playerAmmo, canvas.getWidth() / 2 + 225, 100, plAmmo);
+            canvas.drawText("" + playerScore, canvas.getWidth() / 2 - 100, canvas.getHeight() / 2, plScore);
         }
 
+        if(!isDead)
+        {
+            plScore.setColor(Color.WHITE);
+            plScore.setTextSize(64);
+            plScore.setTypeface(typeface);
+            plScore.setShadowLayer(5,5,5, Color.BLACK);
+            plScore.setAntiAlias(true);
+
+            canvas.drawText("Score : " + playerScore, 100, 100, plScore);
+
+            plLevel.setColor(Color.YELLOW);
+            plLevel.setTextSize(64);
+            plLevel.setTypeface(typeface);
+            plLevel.setShadowLayer(5,5,5, Color.BLACK);
+            plLevel.setTextAlign(Paint.Align.CENTER);
+            plLevel.setAntiAlias(true);
+
+            canvas.drawText("Level : " + playerLevel, canvas.getWidth() / 2 - 225 , 100, plLevel);
+
+            if(playerHasCannon)
+            {
+                if(playerAmmo > 0)
+                {plAmmo.setColor(Color.GREEN);}
+                else
+                {plAmmo.setColor(Color.RED);}
+                plAmmo.setTextSize(64);
+                plAmmo.setTypeface(typeface);
+                plAmmo.setShadowLayer(5,5,5, Color.BLACK);
+                plAmmo.setTextAlign(Paint.Align.CENTER);
+                plAmmo.setAntiAlias(true);
+
+                canvas.drawText("Ammo : " + playerAmmo, canvas.getWidth() / 2 + 225, 100, plAmmo);
+            }
+        }
     }
 
     //Draw player's level up
@@ -418,7 +579,7 @@ public class Player  {
         //Check if in range of pixels
         if (!enemy.getHit()) {
             //IF STATEMENT WIP
-            if (enemyX <= (playerX + 150) && enemyX >= playerX && enemyY >= playerY && enemyY < (playerY+150)) {
+            if (enemyX <= (playerX + 150) && enemyX >= playerX && enemyY >= playerY && enemyY < (playerY+150) && !isDead) {
                 CheckPlayerDeath();
                 enemy.setHit(true);
                 playerSpeed = -25;
@@ -430,6 +591,7 @@ public class Player  {
         //Add one score for player (Added by Andrey)
         if(enemy.getX() < playerX && !enemy.passPlayer && !isDead)
         {
+
             playerScore = playerScore + 10;
             audioManager.PlayScore(gameViewContext);
             if(!enemy.passPlayer)
@@ -439,6 +601,7 @@ public class Player  {
             }
             enemy.passPlayer = true;
         }
+
     }
 
 
