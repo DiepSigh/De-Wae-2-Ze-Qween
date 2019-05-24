@@ -1,5 +1,6 @@
 package com.loisaldana.sampledungeoncrawler;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,8 @@ Created by Canados
 */
 
 public class GameView extends View {
+
+    Activity activity;
 
     Context gameViewContext;
     private int canvasWidth;
@@ -129,12 +132,23 @@ public class GameView extends View {
             //System.out.println("BUTTON IS PRESSED");
         }
 
+        //Reset Button
         if(x > character.buttonPlayAgainX && y > character.buttonPlayAgainY && x < character.buttonPlayAgainX + character.playAgain.getWidth() &&
                y < character.buttonPlayAgainY + character.playAgain.getHeight() && character.isDead && !character.buttonPlayerAgainIsPressed)
         {
-            System.out.println("WE RELOAD SCENE HERE...");
+
             audioManager.PlayRestart(gameViewContext);
             character.buttonPlayerAgainIsPressed = true; // <--- we need to turn it back to false after
+
+        }
+
+        //Exit Button
+        if(x > character.buttonExitX && y > character.buttonExitY && x < character.buttonExitX + character.exit.getWidth() &&
+                y < character.buttonExitY + character.exit.getHeight() && character.isDead)
+        {
+            audioManager.PlayRestart(gameViewContext);
+            activity.finish();
+            System.exit(0);
         }
 
         if(event.getAction() == MotionEvent.ACTION_DOWN && !character.playerShots)

@@ -25,7 +25,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         gameView = new GameView(this);
-
+        gameView.activity = this;
 
         //Changing font family here :: added by Andrey  ::
         TextView textView = new TextView(this);
