@@ -1,6 +1,7 @@
 package com.loisaldana.sampledungeoncrawler;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +9,9 @@ import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+
+//import java.awt.*;
 
 
 /*
@@ -21,14 +25,18 @@ public class GameView extends View {
     private int canvasHeight;
     boolean gameRun = false;
     Typeface fontFaceLevel;
+    Button button;
+
 
     Player character = new Player(); // creating player object here
     Weapon laserCannon = new Weapon(); // creating weapon object
     Projectile bullet = new Projectile(); // creating bullet object
     AudioManager audioManager = new AudioManager();
     Loot coin =  new Loot(); // creates items object
-    AudioManager audioManager= new AudioManager();
     Bitmap mapBitmap; // this is bitmap we using for background
+
+    int temp = 100;
+
 
     Enemy enemy = new Enemy(BitmapFactory.decodeResource(getResources(), R.drawable.sonic));
 
@@ -54,6 +62,7 @@ public class GameView extends View {
         bullet.bulletBitmap[3] = BitmapFactory.decodeResource(getResources(), R.drawable.bullet4);
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
         coin.coin = BitmapFactory.decodeResource(getResources(), R.drawable.coin3);
+        coin.scoreCoin = BitmapFactory.decodeResource(getResources(), R.drawable.point20);
 
      }
 
@@ -208,6 +217,15 @@ public class GameView extends View {
             coin.drawCoin(canvas,coin.coin);
         }
 
+        if(coin.col){
+
+            coin.drawScore(canvas, coin.scoreCoin);
+            coin.col = false;
+
+        }
+
+
+
 
         //System.out.println("PLAYER'S REAL SCORE  " + character.GetPlayerScore());
         character.drawPlayersLifes(canvas, character.HPBitmap); // call player's HP on HUD
@@ -239,6 +257,7 @@ public class GameView extends View {
     {
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
 
+
         if(character.GetPlayerSpeed() < 0 && !character.isDead)
         {
             audioManager.PlayPlayerMoveUp(gameViewContext);
@@ -258,9 +277,15 @@ public class GameView extends View {
             character.SetPlayerSpeed(character.GetPlayerSpeed() + 2); // imitation player's gravity.
         }
 
-        if(coin.onReset){
-            coin.update();
-        }
+        coin.playerSpriteX = character.GetPlayerPosX();
+        coin.playerSpriteY = character.GetPlayerPosY();
+        coin.playerSpriteWidth = character.GetPlayerPosX() + 100;
+        coin.playerSpriteHeight = character.GetPlayerPosY() + 100;
+
+        coin.CheckCollision(character);
+        coin.update();
+
+
     }
 
     //If we touch screen we changing player's movement...
@@ -303,6 +328,9 @@ public class GameView extends View {
         Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
         return rotateBitmap;
     }
+
+
+
 
 }
 

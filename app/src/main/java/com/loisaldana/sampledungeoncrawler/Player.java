@@ -98,6 +98,10 @@ public class Player  {
     public int timerForLvlMsg = 0;
     public double randomColorMsg;
 
+    public Player ()
+    {}
+
+
     void drawDamage(Canvas canvas, Bitmap mapBitmap)
     {
         canvas.drawBitmap(mapBitmap, spriteDamageX, spriteDamageY,null);
@@ -119,10 +123,7 @@ public class Player  {
         scoreSpriteMovements();
     }
 
-    void scoreSpriteMovements()
-    {
-        spriteScoreY -= 35;
-    }
+    void scoreSpriteMovements(){ spriteScoreY -= 35; }
 
     //Draw player function
     void drawPlayer(Canvas canvas, Bitmap mapBitmap){
@@ -193,7 +194,7 @@ public class Player  {
 
         }
 
-        System.out.println("PLAYER'S RELOAD    " + reload);
+        //System.out.println("PLAYER'S RELOAD    " + reload);
     }
 
     //Draw player's lifes
@@ -346,6 +347,7 @@ public class Player  {
             }
             enemy.passPlayer = true;
         }
+
     }
 
     public void GameOver(){
