@@ -2,6 +2,7 @@ package com.loisaldana.sampledungeoncrawler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 /*
@@ -24,11 +26,13 @@ public class GameView extends View {
     private int canvasHeight;
     boolean gameRun = false;
     Typeface fontFaceLevel;
+    Button button;
 
     Player character;
     Weapon laserCannon;
     Projectile bullet; // creating bullet object
     AudioManager audioManager = new AudioManager();
+    Loot coin =  new Loot(); // creates items object
     Bitmap mapBitmap; // this is bitmap we using for background
 
     Enemy enemy;
@@ -37,6 +41,8 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
         gameViewContext = context;
+        coin.coin = BitmapFactory.decodeResource(getResources(), R.drawable.coin3);
+        coin.scoreCoin = BitmapFactory.decodeResource(getResources(), R.drawable.point20);
 
         character = new Player(context);
         laserCannon = new Weapon(context);
@@ -68,8 +74,21 @@ public class GameView extends View {
         laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady, character.playerHasCannon);
         laserCannon.drawTextButton(canvas, character);
 
+        if(!coin.isActive && !coin.onReset){
+            coin.canvasW = canvas.getWidth();
+            coin.cX = coin.canvasW;
+            coin.getRandomY(0, canvas.getHeight());
+        }
+        if(!coin.onReset){
+            coin.drawCoin(canvas,coin.coin);
+        }
+        if(coin.col){
+            coin.drawScore(canvas, coin.scoreCoin);
+            coin.col = false;
+        }
         if(!gameRun)
         {OnStart(); gameRun = true;}
+
 
     }
 
@@ -110,6 +129,12 @@ public class GameView extends View {
         {
             audioManager.bgTheme.stop();
         }
+        coin.playerSpriteX = character.GetPlayerPosX();
+        coin.playerSpriteY = character.GetPlayerPosY();
+        coin.playerSpriteWidth = character.GetPlayerPosX() + 100;
+        coin.playerSpriteHeight = character.GetPlayerPosY() + 100;
+        coin.CheckCollision(character);
+        coin.update();
     }
 
     //If we touch screen we changing player's movement...
