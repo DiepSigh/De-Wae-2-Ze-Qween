@@ -115,4 +115,14 @@ public class Enemy {
         }
     }
 
+    public void ResetAll(){
+        //Reinitialize
+        count = 0;
+        xVel = 50;
+        x = screenWidth;
+        y = screenHeight / 2;
+        hitPlayer = false;
+        passPlayer = false;
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.loisaldana.sampledungeoncrawler;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 /*
@@ -16,16 +19,20 @@ Created by Canados
 
 public class GameView extends View {
 
+    Activity activity;
+
     Context gameViewContext;
     private int canvasWidth;
     private int canvasHeight;
     boolean gameRun = false;
     Typeface fontFaceLevel;
+    Button button;
 
     Player character;
     Weapon laserCannon;
     Projectile bullet; // creating bullet object
     AudioManager audioManager = new AudioManager();
+    Loot coin =  new Loot(); // creates items object
     Bitmap mapBitmap; // this is bitmap we using for background
 
     Enemy enemy;
@@ -34,6 +41,8 @@ public class GameView extends View {
     public GameView(Context context) {
         super(context);
         gameViewContext = context;
+        coin.coin = BitmapFactory.decodeResource(getResources(), R.drawable.coin3);
+        coin.scoreCoin = BitmapFactory.decodeResource(getResources(), R.drawable.point20);
 
         character = new Player(context);
         laserCannon = new Weapon(context);
@@ -65,8 +74,21 @@ public class GameView extends View {
         laserCannon.drawButtonWeapon(canvas, canvasWidth, canvasHeight, character.shotIsReady, character.playerHasCannon);
         laserCannon.drawTextButton(canvas, character);
 
+        if(!coin.isActive && !coin.onReset){
+            coin.canvasW = canvas.getWidth();
+            coin.cX = coin.canvasW;
+            coin.getRandomY(0, canvas.getHeight());
+        }
+        if(!coin.onReset){
+            coin.drawCoin(canvas,coin.coin);
+        }
+        if(coin.col){
+            coin.drawScore(canvas, coin.scoreCoin);
+            coin.col = false;
+        }
         if(!gameRun)
         {OnStart(); gameRun = true;}
+
 
     }
 
@@ -107,6 +129,12 @@ public class GameView extends View {
         {
             audioManager.bgTheme.stop();
         }
+        coin.playerSpriteX = character.GetPlayerPosX();
+        coin.playerSpriteY = character.GetPlayerPosY();
+        coin.playerSpriteWidth = character.GetPlayerPosX() + 100;
+        coin.playerSpriteHeight = character.GetPlayerPosY() + 100;
+        coin.CheckCollision(character);
+        coin.update();
     }
 
     //If we touch screen we changing player's movement...
@@ -129,12 +157,23 @@ public class GameView extends View {
             //System.out.println("BUTTON IS PRESSED");
         }
 
+        //Reset Button
         if(x > character.buttonPlayAgainX && y > character.buttonPlayAgainY && x < character.buttonPlayAgainX + character.playAgain.getWidth() &&
                y < character.buttonPlayAgainY + character.playAgain.getHeight() && character.isDead && !character.buttonPlayerAgainIsPressed)
         {
-            System.out.println("WE RELOAD SCENE HERE...");
+
             audioManager.PlayRestart(gameViewContext);
             character.buttonPlayerAgainIsPressed = true; // <--- we need to turn it back to false after
+            PlayAgain();
+        }
+
+        //Exit Button
+        if(x > character.buttonExitX && y > character.buttonExitY && x < character.buttonExitX + character.exit.getWidth() &&
+                y < character.buttonExitY + character.exit.getHeight() && character.isDead)
+        {
+            audioManager.PlayRestart(gameViewContext);
+            activity.finish();
+            System.exit(0);
         }
 
         if(event.getAction() == MotionEvent.ACTION_DOWN && !character.playerShots)
@@ -174,7 +213,12 @@ public class GameView extends View {
         return rotateBitmap;
     }
 
-
+    //Reset all
+    void PlayAgain() {
+        tails.ResetAll();
+        tails.setActive(false);
+        enemy.ResetAll();
+        character.ResetAll();
+        character.buttonPlayerAgainIsPressed = false;
+    }
 }
-
-

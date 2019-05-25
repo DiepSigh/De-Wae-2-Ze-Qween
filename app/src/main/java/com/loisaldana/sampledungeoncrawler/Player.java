@@ -26,6 +26,7 @@ public class Player  {
     Bitmap hitSprite;
     Bitmap gameOver;
     Bitmap playAgain;
+    Bitmap exit;
 
     public boolean playerHasCannon = true;
     public boolean playerShots = false;
@@ -37,6 +38,9 @@ public class Player  {
 
     public int buttonPlayAgainX;
     public int buttonPlayAgainY;
+
+    public int buttonExitX;
+    public int buttonExitY;
 
     public int spriteHitX;
     public int spriteHitY;
@@ -144,6 +148,7 @@ public class Player  {
         hitSprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.hit200);
         gameOver = BitmapFactory.decodeResource(context.getResources(), R.drawable.gameover);
         playAgain = BitmapFactory.decodeResource(context.getResources(), R.drawable.playagain);
+        exit = BitmapFactory.decodeResource(context.getResources(), R.drawable.exit);
     }
 
 
@@ -154,6 +159,7 @@ public class Player  {
         {
             drawGameOver(canvas, gameOver);
             drawPlayAgain(canvas, playAgain);
+            drawExit(canvas, exit);
         }
 
         //Draw player's spite with animation
@@ -280,6 +286,13 @@ public class Player  {
 
     }
 
+    void drawExit(Canvas canvas, Bitmap mapBitmap)
+    {
+        canvas.drawBitmap(mapBitmap, canvas.getWidth() / 2 - exit.getWidth() / 2, canvas.getHeight() - exit.getHeight() * 2 + 50,null);
+        buttonExitX = canvas.getWidth() / 2 - exit.getWidth() / 2;
+        buttonExitY = canvas.getHeight() - exit.getHeight() * 2 + 50;
+    }
+
     void drawPlayAgain(Canvas canvas, Bitmap mapBitmap)
     {
         canvas.drawBitmap(mapBitmap, canvas.getWidth() / 2 - playAgain.getWidth() / 2, canvas.getHeight() / 2 + playAgain.getHeight() / 2 + 100,null);
@@ -373,9 +386,8 @@ public class Player  {
         }
         if(playerY + playerCurrentBitmap.getHeight() > minPlayerY)
         {
-            playerSpeed = -45;
+            playerSpeed = -55;
             CheckPlayerDeath();
-
         }
 
         //Settings for player rotation
@@ -519,7 +531,6 @@ public class Player  {
 
         switch (playerTry)
         {
-
             case 3:
                 playerHasCannon = false;
                 playerAmmo = 0;
@@ -614,6 +625,38 @@ public class Player  {
         matrix.setRotate(degree, src.getWidth()/2, src.getHeight()/2);
         Bitmap rotateBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
         return rotateBitmap;
+    }
+
+    //Reset player lives and score
+    public void ResetAll(){
+        SetPlayerPosX(playerCurrentBitmap.getWidth() - playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        SetPlayerPosY(0); // here we define start position for player on Y
+        SetPlayerSpeed(0);
+        SetPlayerScore(0);
+        playerLife = 3;
+        isDead = false;
+        playerHasCannon = true;
+        playerShots = false;
+        hitSpriteIsActive = false;
+        damageSpriteIsActive = false;
+        killScoreIsActive = false;
+        levelUp = false;
+        playerScore = 0;
+        playerTempScore = 0;
+        playerLevel = 1;
+        levelLimit = 100;
+        playerAmmo = 5;
+        shotEventCounter = 0;
+        shotIsReady = false;
+        reload = 0;
+
+        buttonPlayerAgainIsPressed = false;
+        sprite_wings_up = true;
+        isDead = false;
+        spriteStep = 1;
+        tempBitmap = 0;
+        playerTry = 1;
+        audioManager.PlayBgTheme(gameViewContext);
     }
 
 }
