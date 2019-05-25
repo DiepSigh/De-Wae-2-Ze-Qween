@@ -135,6 +135,7 @@ public class GameView extends View {
             System.out.println("WE RELOAD SCENE HERE...");
             audioManager.PlayRestart(gameViewContext);
             character.buttonPlayerAgainIsPressed = true; // <--- we need to turn it back to false after
+            PlayAgain();
         }
 
         if(event.getAction() == MotionEvent.ACTION_DOWN && !character.playerShots)
@@ -174,7 +175,12 @@ public class GameView extends View {
         return rotateBitmap;
     }
 
-
+    //Reset all
+    void PlayAgain() {
+        tails.ResetAll();
+        tails.setActive(false);
+        enemy.ResetAll();
+        character.ResetAll();
+        character.buttonPlayerAgainIsPressed = false;
+    }
 }
-
-
