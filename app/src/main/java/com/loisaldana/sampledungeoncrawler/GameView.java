@@ -139,7 +139,7 @@ public class GameView extends View {
 
             audioManager.PlayRestart(gameViewContext);
             character.buttonPlayerAgainIsPressed = true; // <--- we need to turn it back to false after
-
+            PlayAgain();
         }
 
         //Exit Button
@@ -188,7 +188,12 @@ public class GameView extends View {
         return rotateBitmap;
     }
 
-
+    //Reset all
+    void PlayAgain() {
+        tails.ResetAll();
+        tails.setActive(false);
+        enemy.ResetAll();
+        character.ResetAll();
+        character.buttonPlayerAgainIsPressed = false;
+    }
 }
-
-

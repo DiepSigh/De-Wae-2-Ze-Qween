@@ -627,4 +627,20 @@ public class Player  {
         return rotateBitmap;
     }
 
+    //Reset player lives and score
+    public void ResetAll(){
+        SetPlayerPosX(playerCurrentBitmap.getWidth() - playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        SetPlayerPosY(0); // here we define start position for player on Y
+        SetPlayerSpeed(0);
+        SetPlayerScore(0);
+        playerLife = 3;
+        isDead = false;
+        playerHasCannon = true;
+        playerShots = false;
+        hitSpriteIsActive = false;
+        damageSpriteIsActive = false;
+        killScoreIsActive = false;
+        levelUp = false;
+    }
+
 }

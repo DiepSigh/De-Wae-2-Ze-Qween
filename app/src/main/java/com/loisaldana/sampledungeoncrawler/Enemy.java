@@ -6,9 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
-//TO DO
-//Set up animation and class to work with 2 different spritesheets
-
 public class Enemy {
     private Bitmap img[] = new Bitmap[3];
     private int x, y;
@@ -76,8 +73,6 @@ public class Enemy {
             double temp;
             //Reset pos/respawn
             x = screenWidth;
-            //temp = RNG(0, screenHeight-150);
-            //y = (int) Math.round(temp);
             y = playerY;
             hitPlayer = false;
             passPlayer = true;
@@ -118,6 +113,16 @@ public class Enemy {
             temp = RNG(0, screenHeight-200);
             y = (int)Math.round(temp);
         }
+    }
+
+    public void ResetAll(){
+        //Reinitialize
+        count = 0;
+        xVel = 50;
+        x = screenWidth;
+        y = screenHeight / 2;
+        hitPlayer = false;
+        passPlayer = false;
     }
 
 }
