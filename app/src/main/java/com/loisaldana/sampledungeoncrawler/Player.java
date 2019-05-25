@@ -641,6 +641,22 @@ public class Player  {
         damageSpriteIsActive = false;
         killScoreIsActive = false;
         levelUp = false;
+        playerScore = 0;
+        playerTempScore = 0;
+        playerLevel = 1;
+        levelLimit = 100;
+        playerAmmo = 5;
+        shotEventCounter = 0;
+        shotIsReady = false;
+        reload = 0;
+
+        buttonPlayerAgainIsPressed = false;
+        sprite_wings_up = true;
+        isDead = false;
+        spriteStep = 1;
+        tempBitmap = 0;
+        playerTry = 1;
+        audioManager.PlayBgTheme(gameViewContext);
     }
 
 }
