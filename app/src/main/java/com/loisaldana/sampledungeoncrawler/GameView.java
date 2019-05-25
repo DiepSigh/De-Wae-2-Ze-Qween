@@ -26,11 +26,13 @@ public class GameView extends View {
     private int canvasHeight;
     boolean gameRun = false;
     Typeface fontFaceLevel;
+    boolean firstRun = true;
     Button button;
 
     Player character;
     Weapon laserCannon;
     Projectile bullet; // creating bullet object
+    BackGroundController BGController = new BackGroundController();
     AudioManager audioManager = new AudioManager();
     Loot coin =  new Loot(); // creates items object
     Bitmap mapBitmap; // this is bitmap we using for background
@@ -50,7 +52,24 @@ public class GameView extends View {
         mapBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.map);
         enemy = new Enemy(context, true);
         tails = new Enemy(context, false);
-     }
+    }
+
+    void OnStart(Canvas canvas)
+    {
+
+        //BGController.Start(canvas, this);
+
+        character.SetPlayerPosX(character.playerCurrentBitmap.getWidth() - character.playerCurrentBitmap.getWidth() / 2); // here we define start position for player on X
+        character.SetPlayerPosY(0); // here we define start position for player on Y
+        character.SetPlayerSpeed(0);
+        laserCannon.SetWeaponPosX(character.GetPlayerPosX());
+        laserCannon.SetWeaponPosY(character.GetPlayerPosY());
+        bullet.SetBulletPosX(character.GetPlayerPosX());
+        bullet.SetBulletPosY(character.GetPlayerPosX());
+        character.playerTempScore = character.GetPlayerScore();
+        character.getRandomIntegerBetweenRange(0,4);
+        audioManager.PlayBgTheme(gameViewContext);
+    }
 
     /* Here we can add images that we want to draw. This function also updates */
     @Override
@@ -59,9 +78,14 @@ public class GameView extends View {
         canvasWidth = canvas.getWidth(); // if we needed to reference to it
         canvasHeight = canvas.getHeight(); // if we needed to reference to it
 
-        canvas.drawBitmap(GetResizeBitmap(mapBitmap, canvasWidth, canvasHeight), 0, 0, null); // call background image on canvas with resize
-        character.onDraw(canvas, enemy, tails, laserCannon);
+        if(firstRun){
+            BGController.Start(canvas, this);
+            firstRun = false;
+        }
+        //canvas.drawBitmap(GetResizeBitmap(mapBitmap, canvasWidth, canvasHeight), 0, 0, null); // call background image on canvas with resize
 
+        BGController.drawBackgrounds(canvas,this);
+        character.onDraw(canvas, enemy, tails, laserCannon);
         //Draws and respawns enemy when it reaches the end
         enemy.draw(canvas, character.GetPlayerPosY());
         if (tails.getActive()) {
@@ -87,7 +111,7 @@ public class GameView extends View {
             coin.col = false;
         }
         if(!gameRun)
-        {OnStart(); gameRun = true;}
+        {OnStart(canvas); gameRun = true;}
 
 
     }
@@ -108,6 +132,9 @@ public class GameView extends View {
         //hitbox check with enemy and tails
         character.enemyPlayerCheck(enemy, enemy.getX(), enemy.getY());
         character.enemyPlayerCheck(tails, tails.getX(), tails.getY());
+///MIKE
+//        Bg1BitMap.
+
 
         //hitbox check with enemy and projectile
         enemy.BulletCheck(bullet.GetBulletPosX(), bullet.GetBulletPosY(), bullet, character, audioManager, character.gameViewContext);
