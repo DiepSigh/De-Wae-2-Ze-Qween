@@ -33,6 +33,8 @@ public class BackGroundController {
     public Bitmap Bg1;
     public Bitmap Bg2;
 
+    public int newScale;
+
 
 public void Start(Canvas canvas,View v)
 {
@@ -43,26 +45,27 @@ public void Start(Canvas canvas,View v)
     Bg1BitMap = BitmapFactory.decodeResource(v.getResources(), R.drawable.background1);
     Bg2BitMap = BitmapFactory.decodeResource(v.getResources(), R.drawable.background1);
 
+    Log.d("Width","Canvas: " + canvasWidth);
+    Bg1 = Bitmap.createScaledBitmap(Bg1BitMap, canvasWidth, canvasHeight +200 , false);
+    Bg2 = Bitmap.createScaledBitmap(Bg2BitMap, canvasWidth, canvasHeight +200, false);
+    bg1Left = 0;
+    bg2Left = Bg1.getScaledWidth(canvas);
+    newScale =  Bg1.getScaledWidth(canvas);
 
-    Bg1 = Bitmap.createScaledBitmap(Bg1BitMap, canvasWidth *2, canvasHeight + 200 , false);
-    Bg2 = Bitmap.createScaledBitmap(Bg2BitMap, canvasWidth*2, canvasHeight + 200 , false);
 
 }
     public void drawBackgrounds(Canvas canvas, View v){
-
-        canvas.drawBitmap(Bg1, bg1Left, 0,null);
-        canvas.drawBitmap(Bg2, bg2Left, 0,null);
-
         bg1Left-=50;
         bg2Left-=50;
 
-        if((bg1Left <= 0 - canvasWidth*2)) {
-            bg1Left = 0 + canvasWidth;
+        if((bg1Left <= 0 - newScale)) {
+            bg1Left = 0 + newScale;
+           // Log.d("Width","Bg1Left: " + bg1Left);
             Log.e("asda", "BG1");
             Log.e("asda", "newpos" + bg1Left);
         }
-        if((bg2Left <= 0 - canvasWidth*2)) {
-            bg2Left = 0 + canvasWidth;
+        if((bg2Left <= 0 - newScale)) {
+            bg2Left = 0 + newScale;
             Log.e("asda", "BG2");
             Log.e("asda", "newpos" + bg2Left);
         }
@@ -74,5 +77,9 @@ public void Start(Canvas canvas,View v)
 //        if((bg2Left <= 0 - canvasWidth*2))
 //        { bg2Left = 0+ canvasWidth * 2 ;
 //            Log.e("asda", "BG1");}
+
+        canvas.drawBitmap(Bg1, bg1Left, 0,null);
+        canvas.drawBitmap(Bg2, bg2Left, 0,null);
+
     }
 }
